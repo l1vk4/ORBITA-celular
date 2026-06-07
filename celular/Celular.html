@@ -1,0 +1,1040 @@
+<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
+     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Space+Mono:wght@400;700&display=swap');
+  :root{
+    --void-0:#02030a;--void-1:#060a1c;--void-2:#0a1230;
+    --azul:#001F56;--azul-soft:#3a5fb0;
+    --cian:#009798;--cian-glow:#2ee6e8;
+    --estrella:#fff4d6;--warm:#ffb86b;
+    --ink:#e8ecff;--ink-dim:#8a93bd;--danger:#ff5d73;
+    --far:#d060c0;--far-glow:#e88ad8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#05060d;overflow:hidden;font-family:'Space Mono',monospace;color:var(--ink)}
+  body{display:flex;align-items:center;justify-content:center}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,rgba(0,151,152,.06),transparent 60%),#05060d;z-index:-1}
+  #app{position:relative;width:100%;height:100%;overflow:hidden}
+  @media (min-width:760px){
+    #app{width:390px;height:min(844px,94vh);border-radius:44px;
+      box-shadow:0 0 0 12px #0b0d16,0 0 0 14px #1a1d2e,0 40px 120px rgba(0,0,0,.8),0 0 80px rgba(0,151,152,.12);overflow:hidden}
+    #app::after{content:'';position:absolute;top:11px;left:50%;transform:translateX(-50%);
+      width:120px;height:26px;background:#0b0d16;border-radius:0 0 18px 18px;z-index:60;pointer-events:none}
+  }
+  canvas{position:absolute;inset:0;display:block}
+  .ui{position:absolute;z-index:10;pointer-events:none}
+  .ui *{pointer-events:auto}
+
+  .logo-corner{top:18px;right:20px;width:48px;height:48px;z-index:15}
+  .logo-corner img{width:100%;height:100%;object-fit:contain;opacity:.9}
+
+  .brand{top:22px;left:26px;}
+  .brand .k{font-family:'Space Mono';font-size:10px;letter-spacing:.32em;color:var(--cian);text-transform:uppercase}
+  .brand .t{font-family:'Fraunces';font-weight:300;font-style:italic;font-size:21px;color:var(--ink);margin-top:3px;letter-spacing:.01em}
+
+  .hint-top{position:absolute;z-index:25;top:86px;left:50%;transform:translateX(-50%);
+    font-size:11px;letter-spacing:.12em;color:var(--ink-dim);text-transform:uppercase;
+    opacity:0;transition:opacity .6s;text-align:center;white-space:normal;
+    width:min(300px,78%);line-height:1.6;pointer-events:none}
+  .hint-top.on{opacity:.75}
+
+  .counter{bottom:28px;right:26px;text-align:right;z-index:12}
+  .counter .num{font-family:'Fraunces';font-size:26px;font-weight:300;color:var(--estrella);line-height:1}
+  .counter .lab{font-size:8px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase;margin-top:3px}
+
+  .hud{bottom:24px;left:26px;max-width:200px}
+  .hud .phase{font-size:9px;letter-spacing:.3em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:6px}
+  .hud .reads{font-family:'Fraunces';font-size:14px;line-height:1.5;color:var(--ink);min-height:44px;transition:opacity .5s}
+
+  .card{position:absolute;z-index:20;width:min(296px,82%);background:linear-gradient(160deg,rgba(10,18,48,.96),rgba(6,10,28,.97));
+    border:1px solid rgba(46,230,232,.22);border-radius:14px;padding:20px 20px 18px;
+    backdrop-filter:blur(14px);box-shadow:0 24px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.03) inset;
+    opacity:0;transform:translateY(8px) scale(.98);pointer-events:none;transition:opacity .28s,transform .28s}
+  .card.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+  .card.far{border-color:rgba(208,96,192,.4)}
+  .card .tag{display:inline-block;font-size:9px;letter-spacing:.2em;padding:4px 9px;border-radius:20px;text-transform:uppercase;margin-bottom:11px}
+  .card .ttl{font-family:'Fraunces';font-size:18px;font-weight:400;line-height:1.25;margin-bottom:8px}
+  .card .bd{font-size:12px;line-height:1.6;color:var(--ink-dim)}
+  .card .bd b{color:var(--cian-glow);font-weight:400}
+  .card.far .bd b{color:var(--far-glow)}
+  .card .x{position:absolute;top:13px;right:14px;font-size:14px;color:var(--ink-dim);cursor:pointer;line-height:1}
+  .card .x:hover{color:var(--ink)}
+
+  .latent-panel{position:absolute;inset:0;z-index:45;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:28px 26px 36px;text-align:center;
+    background:rgba(2,3,10,.88);backdrop-filter:blur(10px);
+    opacity:0;pointer-events:none;transition:opacity .7s}
+  .latent-panel.on{opacity:1;pointer-events:auto}
+  .latent-panel .lp-pre{font-size:9px;letter-spacing:.32em;color:var(--cian);text-transform:uppercase;margin-bottom:14px}
+  .latent-panel h2{font-family:'Fraunces';font-weight:300;font-size:clamp(22px,5vw,34px);line-height:1.15;color:var(--ink);margin-bottom:16px}
+  .latent-panel h2 i{font-style:italic;color:var(--cian-glow)}
+  .latent-panel p{font-size:13px;line-height:1.75;color:var(--ink-dim);max-width:340px;margin-bottom:28px}
+  .latent-panel p b{color:var(--ink);font-weight:400}
+  .latent-panel .sep{width:40px;height:1px;background:rgba(46,230,232,.3);margin:0 auto 24px}
+  .lp-btn{cursor:pointer;border:none;font-family:'Space Mono';font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--void-0);background:linear-gradient(100deg,var(--cian),var(--cian-glow));
+    padding:16px 36px;border-radius:40px;box-shadow:0 0 40px rgba(46,230,232,.4);transition:transform .2s}
+  .lp-btn:hover{transform:translateY(-2px)}
+
+  .cta{position:absolute;z-index:30;left:50%;transform:translateX(-50%);bottom:34px;
+    pointer-events:auto;border:none;cursor:pointer;
+    font-family:'Space Mono';font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--void-0);background:linear-gradient(100deg,var(--cian),var(--cian-glow));
+    padding:15px 34px;border-radius:40px;box-shadow:0 0 40px rgba(46,230,232,.4);
+    transition:transform .2s,box-shadow .3s;opacity:0;animation:none}
+  .cta.show{animation:ctaIn .8s ease forwards}
+  @keyframes ctaIn{to{opacity:1}}
+  .cta:hover{transform:translateX(-50%) translateY(-2px);box-shadow:0 0 60px rgba(46,230,232,.65)}
+  .cta.ghost{background:transparent;color:var(--cian-glow);border:1px solid rgba(46,230,232,.4);box-shadow:none}
+
+  .quiz{position:absolute;z-index:40;left:50%;bottom:0;transform:translateX(-50%);
+    width:min(480px,100%);text-align:center;opacity:0;
+    pointer-events:none;transition:opacity .4s;
+    background:linear-gradient(to top,rgba(2,3,10,.97) 70%,rgba(2,3,10,0));
+    padding:20px 20px 28px;}
+  .quiz.on{opacity:1;pointer-events:auto}
+  .quiz .now{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:14px;padding:12px 16px;
+    background:rgba(46,230,232,.06);border:1px solid rgba(46,230,232,.18);border-radius:14px}
+  .quiz .now .now-label{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--cian);opacity:.8}
+  .quiz .now b{font-family:'Fraunces';font-style:italic;font-weight:300;font-size:20px;color:var(--estrella);line-height:1.2;text-align:center}
+  .quiz .now .now-eq{display:inline-flex;align-items:flex-end;gap:3px;height:16px;margin-bottom:2px}
+  .quiz .now .now-eq i{width:3px;background:var(--cian-glow);border-radius:2px;animation:eq .9s ease-in-out infinite}
+  .quiz .now .now-eq i:nth-child(1){height:7px;animation-delay:0s}
+  .quiz .now .now-eq i:nth-child(2){height:14px;animation-delay:.22s}
+  .quiz .now .now-eq i:nth-child(3){height:9px;animation-delay:.44s}
+  @keyframes eq{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+  .quiz .q{font-family:'Fraunces';font-style:italic;font-weight:300;font-size:20px;line-height:1.4;color:var(--ink);margin-bottom:18px}
+  .quiz .row{display:flex;gap:14px;justify-content:center}
+  .quiz button{flex:1;max-width:190px;cursor:pointer;font-family:'Space Mono';font-size:12px;letter-spacing:.12em;
+    padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:var(--ink);
+    transition:all .2s;text-transform:uppercase}
+  .quiz button.like:hover{border-color:var(--cian-glow);background:rgba(46,230,232,.12);color:var(--cian-glow)}
+  .quiz button.skip:hover{border-color:var(--danger);background:rgba(255,93,115,.1);color:var(--danger)}
+
+  .why-top{position:absolute;z-index:35;top:88px;left:50%;transform:translateX(-50%);
+    width:min(360px,88%);opacity:0;pointer-events:none;transition:opacity .45s;text-align:center}
+  .why-top.on{opacity:1;pointer-events:auto}
+  .why-top .pill{cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);
+    border:1px solid rgba(255,184,107,.4);border-radius:30px;padding:9px 16px;background:rgba(255,184,107,.06);
+    transition:all .2s;opacity:.35;pointer-events:none;backdrop-filter:blur(6px)}
+  .why-top .pill.active{opacity:1;pointer-events:auto}
+  .why-top .pill.active:hover{background:rgba(255,184,107,.14)}
+  .why-top .exp{margin-top:12px;text-align:left;background:linear-gradient(160deg,rgba(14,10,4,.97),rgba(6,5,12,.98));
+    border:1px solid rgba(255,184,107,.22);border-radius:13px;padding:16px 17px;
+    font-size:12.5px;line-height:1.65;color:var(--ink-dim);max-height:0;overflow:hidden;opacity:0;transition:all .45s;
+    backdrop-filter:blur(8px)}
+  .why-top .exp.open{max-height:360px;opacity:1}
+  .why-top .exp b{color:var(--warm);font-weight:400}
+  .why-top .exp .lbl{font-size:8.5px;letter-spacing:.24em;color:var(--warm);text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
+
+  .cont-btn{position:absolute;z-index:42;left:50%;transform:translateX(-50%);
+    bottom:100px;
+    display:none;cursor:pointer;border:none;
+    font-family:'Space Mono';font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--void-0);
+    background:linear-gradient(100deg,var(--cian),var(--cian-glow));padding:13px 30px;border-radius:30px;
+    box-shadow:0 0 26px rgba(46,230,232,.35);transition:transform .15s}
+  .cont-btn.show{display:inline-block;animation:contIn .4s ease}
+  .cont-btn:hover{transform:translateX(-50%) translateY(-1px)}
+  @keyframes contIn{from{opacity:0;transform:translateX(-50%) translateY(6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+  .finale-panel{position:absolute;inset:0;z-index:48;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    background:rgba(2,3,10,.78);backdrop-filter:blur(8px);
+    opacity:0;pointer-events:none;transition:opacity .5s}
+  .finale-panel.on{opacity:1;pointer-events:auto}
+  .finale-inner{position:relative;width:min(310px,90%);
+    background:linear-gradient(160deg,rgba(10,18,48,.97),rgba(6,10,28,.98));
+    border:1px solid rgba(46,230,232,.28);border-radius:18px;
+    padding:28px 24px 24px;
+    box-shadow:0 28px 80px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03) inset;
+    text-align:center}
+  .finale-inner .fp-close{position:absolute;top:14px;right:16px;
+    font-size:18px;color:var(--ink-dim);cursor:pointer;line-height:1;
+    transition:color .2s;border:none;background:none;padding:4px 6px}
+  .finale-inner .fp-close:hover{color:var(--ink)}
+  .finale-inner .fp-tag{display:inline-block;font-size:9px;letter-spacing:.2em;padding:4px 10px;
+    border-radius:20px;text-transform:uppercase;margin-bottom:14px;
+    background:rgba(46,230,232,.14);color:var(--cian-glow)}
+  .finale-inner .fp-ttl{font-family:'Fraunces';font-size:22px;font-weight:400;
+    line-height:1.2;margin-bottom:12px;color:var(--ink)}
+  .finale-inner .fp-bd{font-size:12.5px;line-height:1.65;color:var(--ink-dim);margin-bottom:6px}
+  .finale-inner .fp-bd b{color:var(--cian-glow);font-weight:400}
+  .finale-inner .fp-note{font-size:10px;color:var(--ink-dim);opacity:.55;margin-top:14px;letter-spacing:.04em}
+
+  .veil{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px;
+    background:radial-gradient(ellipse at center,rgba(6,10,28,.4),rgba(2,3,10,.92));
+    backdrop-filter:blur(3px);transition:opacity .8s}
+  .veil.gone{opacity:0;pointer-events:none}
+  .veil .pre{font-size:10px;letter-spacing:.34em;color:var(--cian);text-transform:uppercase;margin-bottom:18px}
+  .veil h1{font-family:'Fraunces';font-weight:300;font-size:clamp(28px,6vw,52px);line-height:1.05;max-width:760px;margin-bottom:20px}
+  .veil h1 i{font-style:italic;color:var(--cian-glow)}
+  .veil p{max-width:480px;font-size:13px;line-height:1.7;color:var(--ink-dim);margin-bottom:28px}
+  .veil .note{font-size:10px;color:var(--ink-dim);margin-top:20px;letter-spacing:.05em;opacity:.7}
+  .veil .headphones{display:inline-flex;align-items:center;gap:8px;margin-bottom:22px;
+    font-size:12px;letter-spacing:.03em;color:var(--cian-glow);
+    border:1px solid rgba(46,230,232,.35);border-radius:30px;padding:11px 20px;background:rgba(46,230,232,.07)}
+  .bigbtn{cursor:pointer;border:none;font-family:'Space Mono';font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--void-0);background:linear-gradient(100deg,var(--cian),var(--cian-glow));padding:17px 44px;border-radius:44px;
+    box-shadow:0 0 50px rgba(46,230,232,.45);transition:transform .2s}
+  .bigbtn:hover{transform:translateY(-2px)}
+
+  .hint-bottom{position:absolute;z-index:25;bottom:96px;left:50%;transform:translateX(-50%);
+    font-size:11px;letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;
+    opacity:0;transition:opacity .6s;text-align:center;pointer-events:none}
+  .hint-bottom.on{opacity:.75}
+</style>
+
+<div id="app">
+  <canvas id="sky"></canvas>
+
+  <div class="ui brand">
+    <div class="k">Alfabetización algorítmica</div>
+    <div class="t">Tu galaxia musical</div>
+  </div>
+
+  <div class="ui logo-corner">
+    <img src="logo.png" alt="Logo proyecto" onerror="this.style.display='none'">
+  </div>
+
+  <div class="hint-top" id="hintTop"></div>
+
+  <div class="ui counter" id="counterBox" style="opacity:0">
+    <div class="num" id="cnum">—</div>
+    <div class="lab">en órbita</div>
+  </div>
+
+  <div class="ui hud">
+    <div class="phase" id="phaseTag">Fase 01 · Exploración</div>
+    <div class="reads" id="reads"></div>
+  </div>
+
+  <div class="card" id="card">
+    <span class="x" id="cardX">✕</span>
+    <span class="tag" id="cardTag"></span>
+    <div class="ttl" id="cardTtl"></div>
+    <div class="bd" id="cardBd"></div>
+  </div>
+
+  <div class="latent-panel" id="latentPanel">
+    <div class="lp-pre">Fase 02 · Entrenamiento</div>
+    <h2>Así se construye <br>tu <i>galaxia</i>.</h2>
+    <div class="sep"></div>
+    <p>Está hecha de <b>canciones</b> (los planetas) y de <b>perfiles</b> vecinos (las estrellas que te rodean). Así es como los <b>Sistemas de Recomendación Musical</b> construyen espacios latentes donde lo más cercano a ti es la recomendación que llega a tus oídos.</p>
+    <p>Estos espacios se <b>entrenan</b> con cada interacción tuya con el sistema. El algoritmo aprende mediante tus inputs, ya sea un like, un skip o cuánto tiempo escuchaste la canción, para ir moviendo tu perfil dentro de este espacio.</p>
+    <p>¿Quieres entrenar tu galaxia para ver hasta dónde se puede mover tu estrella de perfil?</p>
+    <button class="lp-btn" id="lpBtn">Entrenar el algoritmo →</button>
+  </div>
+
+  <div class="quiz" id="quiz">
+    <div class="now">
+      <span class="now-eq"><i></i><i></i><i></i></span>
+      <span class="now-label">Suena ahora</span>
+      <b id="qSong">—</b>
+    </div>
+    <div class="q" id="qText"></div>
+    <div class="row">
+      <button class="like" id="bLike">♥ Like</button>
+      <button class="skip" id="bSkip">↦ Skip</button>
+    </div>
+  </div>
+
+  <div class="why-top" id="why">
+    <span class="pill" id="whyPill">⌖ ¿Por qué se movió hacia allá?</span>
+    <div class="exp" id="whyExp"></div>
+  </div>
+
+  <button class="cont-btn" id="cont">Continuar →</button>
+
+  <div class="finale-panel" id="finalePanel">
+    <div class="finale-inner">
+      <button class="fp-close" id="finaleClose">✕</button>
+      <span class="fp-tag">Parte 2</span>
+      <div class="fp-ttl">Ahora es tu turno</div>
+      <div class="fp-bd">Aquí termina lo que el algoritmo decide. Ahora puedes reimaginar tu galaxia: <b>qué la construye</b> y <b>para qué existe</b> — en vez de retenerte.</div>
+      <div class="fp-note">Toca ✕ para ver tu galaxia final</div>
+    </div>
+  </div>
+
+  <button class="cta" id="cta"></button>
+  <div class="hint-bottom" id="hintBottom"></div>
+
+  <div class="veil" id="intro">
+    <div class="pre">Alfabetización algorítmica · Parte 1 de 2</div>
+    <h1>Descubre tu<br><i>galaxia musical</i>.</h1>
+    <p>Bienvenido a tu galaxia musical. Este espacio muestra cómo tu algoritmo de recomendación musical construye tus recomendaciones. Tu perfil es la estrella que está al medio, y las estrellas a tu alrededor son tus perfiles vecinos. Los planetas son tus canciones más escuchadas últimamente.</p>
+    <div class="headphones">🎧 Ponte los audífonos antes de empezar</div>
+    <button class="bigbtn" id="enter">Conectar Spotify →</button>
+    <div class="note">Prototipo con datos simulados · la conexión real a Spotify se habilita en la versión con servidor</div>
+  </div>
+</div>
+
+<script>
+(()=>{
+"use strict";
+const cv=document.getElementById('sky'), ctx=cv.getContext('2d');
+const app=document.getElementById('app');
+let W,H,DPR,VW,VH;
+function resize(){
+  DPR=Math.min(devicePixelRatio||1,2);
+  VW=app.clientWidth; VH=app.clientHeight;
+  W=cv.width=VW*DPR; H=cv.height=VH*DPR;
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+}
+addEventListener('resize',resize);
+new ResizeObserver(()=>{resize();}).observe(app);
+resize();
+
+const bus=new BroadcastChannel('galaxia-srm');
+function emit(type,data){try{bus.postMessage(Object.assign({type},data||{}));}catch(e){}}
+
+/* ---- datos: 10 canciones ---- */
+const ARTISTS=["Mac DeMarco","Tame Impala","Mitski","Frank Ocean","Rosalía","King Krule","Beach House","Clairo"];
+const TOP_ARTIST=ARTISTS[0], SECOND=ARTISTS[1];
+const SONGS=[
+  {t:"Chamber of Reflection", a:TOP_ARTIST,     infl:1.0},
+  {t:"The Less I Know the Better", a:SECOND,     infl:.91},
+  {t:"Nobody",                  a:"Mitski",       infl:.78},
+  {t:"Nights",                  a:"Frank Ocean",  infl:.73},
+  {t:"DESPECHÁ",                a:"Rosalía",      infl:.68},
+  {t:"Easy Easy",               a:"King Krule",   infl:.54},
+  {t:"Space Song",              a:"Beach House",  infl:.60},
+  {t:"Bags",                    a:"Clairo",       infl:.48},
+  {t:"My Kind of Woman",        a:TOP_ARTIST,     infl:.64},
+  {t:"Pink Pony Club",          a:"Chappell Roan",infl:.41},
+];
+
+/* canción lejana: el sistema nunca se la mostrará */
+const FAR_SONG={t:"Desconocida", a:"Artista que nunca te llegará", infl:.5};
+
+const NEIGHBORS=[
+  {tag:"Tú",     col:"#001F56",glow:"#3a5fb0",
+   ttl:"Perfil #001F56 — eres tú",
+   bd:`Tu reflejo en el espacio latente. El sistema te conoce como <b>fan n°1 de ${TOP_ARTIST}</b> y como oyente nocturno soñador.`},
+  {tag:"Vecino", col:"#009798",glow:"#2ee6e8",
+   ttl:"Perfil #009798 — casi tú",
+   bd:`Te recomienda lo que este perfil escucha, pero aún no tú. Solo son <b>más canciones de ${TOP_ARTIST}</b>. El algoritmo asume que tu futuro es su presente.`},
+  {tag:"Vecino", col:"#1f8fb0",glow:"#4fd0e0",
+   ttl:"Perfil #0A77A4 — un paso adelante",
+   bd:`Escuchó hace un mes lo que a ti empezó a sonarte esta semana. <b>Escucha muy similar a ti</b>, por lo que el algoritmo no va a fallar al recomendarte lo que él escucha.`},
+  {tag:"Vecino", col:"#2e6e9e",glow:"#5ab0d8",
+   ttl:"Perfil #1E5C8C — tu versión indie",
+   bd:`Ama escuchar a ${TOP_ARTIST} <b>igual que tú</b>, por lo que el sistema te recomienda más canciones del artista. No importa si es más de lo mismo.`},
+  {tag:"Vecino", col:"#3a5a8c",glow:"#6aa0d0",
+   ttl:"Perfil #2A4F7A — tu doppelgänger",
+   bd:`Escucha <b>los mismos artistas que tú</b>, por lo que te recomienda más de lo mismo.`},
+  {tag:"Vecino", col:"#4a4f9c",glow:"#7a80e0",
+   ttl:"Perfil #34408A — tu primo lejano",
+   bd:`Escucha canciones parecidas, pero con algunas diferencias. Estas diferencias no llegan a ser tan grandes como para sacarte del mismo radio.`},
+];
+
+/* perfil lejano: escucha tan distinto que nunca se cruzará contigo */
+const FAR_NEIGHBOR={tag:"Perfil lejano", col:"#d060c0", glow:"#e88ad8",
+  ttl:"Perfil #B0309A — nunca se cruzará contigo",
+  bd:`Este oyente escucha <b>algo completamente distinto a ti</b>. El sistema mide la distancia entre ustedes y la considera demasiado grande: <b>jamás los va a juntar</b>. Para el algoritmo, ustedes viven en galaxias que nunca se tocan.`};
+
+const QUESTIONS=[
+ s=>`Es tu más escuchada últimamente. ¿Pero escucharías esta canción en una primera cita? 👉🏻👈🏻`,
+ s=>`"${s.t}" ¿La escucharías mirando por la ventana de un bus, imaginándote que está lloviendo? 🌧️`,
+ s=>`¿Subirías esta canción a tus historias con una foto borrosa de un paisaje otoñal para mostrar tu profunda sensibilidad? 🍂📷`,
+ s=>`¿Subirías "${s.t}" a tus redes solo para que alguien entienda la indirecta? 👀`,
+ s=>`¿Es tu canción favorita para cantar a todo pulmón en un karaoke? 😎`,
+ s=>`¿Te gustaría que esta canción sonara cuando te estás agarrando a tu crush en una fiesta? 🫦`,
+ s=>`¿Pondrías esta canción para ignorar a todo el mundo mientras vas apretado en el metro un lunes en la mañana? 🎧`,
+ s=>`¿Sería la primera canción que pondrías al conectarte a un parlante al llegar al carrete? 🍻`,
+ s=>`¿Sería tu primera elección para mirar al techo a las 2 AM pensando en algo que dijiste hace cinco años? 🕰️💭`,
+ s=>`¿Subirías esta canción a tus notas de Instagram después de que te patearan por WhatsApp?`,
+];
+
+function whyText(state){
+  const {answerMs,returnedToSafe,idx,like} = state;
+  const hour=new Date().getHours();
+  const hLabel=hour<6?"madrugada":hour<12?"mañana":hour<19?"tarde":"noche";
+  const pool=[];
+  if(answerMs<900) pool.push(`Respondiste en <b>${(answerMs/1000).toFixed(1)} s</b>. El sistema prefiere el comportamiento sobre la opinión para perfilarte. <b>Tu velocidad importó más que tu respuesta.</b>`);
+  else if(answerMs>3200) pool.push(`Tardaste <b>${(answerMs/1000).toFixed(1)} s</b>. El algoritmo entiende como un input negativo el no escuchar la canción completa, <b>aunque la tengas en mil playlists y la subas siempre a tu historia.</b>`);
+  else pool.push(`Tu respuesta llegó en <b>${(answerMs/1000).toFixed(1)} s</b>. <b>Tu comportamiento es más veraz que tu opinión.</b>`);
+  pool.push(`Son las <b>${String(hour).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}</b>. Siempre en la ${hLabel} escuchas algo chill, por lo que deduce que buscas algo conocido. <b>Tu contexto decidió por ti.</b>`);
+  if(returnedToSafe) pool.push(`El sistema te devolvió a <b>tu primera canción</b>. Esa elección inicial se volvió tu opción segura. El sistema de recomendación está diseñado para que tu umbral de sorpresa siempre sea bajo, prefiriendo lo seguro por sobre el descubrimiento real.`);
+  if(like) pool.push(`Le diste like. Para el algoritmo eso confirma el patrón: <b>prefieres lo conocido</b>. Sabe que volviendo siempre a tu opción segura te mantendrá lo más posible dentro de la plataforma. Logró entrenarte bien para que seas un usuario predecible.`);
+  else pool.push(`Hiciste skip. El sistema lo archiva como preferencia negativa y <b>trata de corregirte</b> volviendo siempre a tu opción segura, porque ya sabe que te gusta. Así cumple su objetivo de retenerte lo más posible dentro de la plataforma. El algoritmo necesita usuarios predecibles y entrenados por él mismo.`);
+  pool.push(`¿Notaste que tu galaxia es cada vez más pequeña? Todo lo que queda fuera de ella <b>se borra y desaparece como opción</b>. Nunca te va a recomendar algo que esté fuera de tu entrenamiento seguro.`);
+  return pool[Math.min(idx,pool.length-1)]||pool[pool.length-1];
+}
+
+/* ---- modelo ---- */
+const cx=()=>W/2, cy=()=>H/2;
+let planets=[], stars=[], you=null;
+let farPlanet=null, farStar=null;
+let activePlanet=null, activeStar=null;
+let radiusScale=1;
+const baseR=()=>Math.min(VW,VH)*0.37*DPR;
+
+const PLANET_PALETTES=[
+  {base:'#c97b4a',band:'#e0a86b',spot:'#8a4a28'},
+  {base:'#4a7ba8',band:'#7fb0d0',spot:'#2e5470'},
+  {base:'#a85a6a',band:'#d08a96',spot:'#6e3540'},
+  {base:'#6a8a5a',band:'#9cc080',spot:'#3e5630'},
+  {base:'#b0944a',band:'#e0c878',spot:'#6e5a28'},
+  {base:'#7a6aa8',band:'#a89cd0',spot:'#4a3e70'},
+  {base:'#5aa8a0',band:'#88d0c8',spot:'#2e6e68'},
+  {base:'#a87a5a',band:'#d0a880',spot:'#6e4a30'},
+  {base:'#8a6aaa',band:'#c09ad8',spot:'#5a3a7a'},
+  {base:'#6aa06a',band:'#98cc98',spot:'#3a6a3a'},
+];
+const FAR_PAL={base:'#9a4a8e',band:'#d060c0',spot:'#5a2a52'};
+
+function build(){
+  const ordered=SONGS.map((s,i)=>({s,i})).sort((a,b)=>b.s.infl-a.s.infl);
+  const N=ordered.length;
+  const sector=(Math.PI*2)/N;
+  planets=ordered.map((o,k)=>{
+    const s=o.s;
+    const dist=0.22+(k/(N-1))*0.72;
+    const offset=(k%2===0)?0:sector*0.5;
+    const ang=k*sector+offset;
+    const size=4+Math.pow(s.infl,2)*13;
+    const pal=PLANET_PALETTES[o.i%PLANET_PALETTES.length];
+    return {s,songIdx:o.i,ang,dist,orbit:k,size,alive:true,born:performance.now()+k*55,
+            ox:0,oy:0,spin:(Math.random()-.5)*0.0003,
+            pal,rot:Math.random()*6.28,rotSpd:0.002+Math.random()*0.004,
+            tilt:(Math.random()-.5)*0.6,ring:s.infl>0.80,bands:2+Math.floor(Math.random()*2)};
+  });
+  relaxPlanets();
+  you={x:null,y:null,pulse:0,target:{ang:0,dist:0}};
+  stars=NEIGHBORS.slice(1).map((n,i)=>{
+    const ang=(i/5)*Math.PI*2+0.5;
+    const dist=0.97+(i%2)*0.03;
+    return {n,ang,dist,idx:i+1,tw:Math.random()*6.28};
+  });
+  /* cuerpos lejanos: posición absoluta en pantalla (arriba y abajo), independiente de baseR */
+  farPlanet={s:FAR_SONG,size:9,ox:0,oy:0,
+             pal:FAR_PAL,rot:Math.random()*6.28,rotSpd:0.003,tilt:0.4,ring:false,bands:3};
+  farStar={n:FAR_NEIGHBOR,tw:0,px:W/2,py:H-150*(DPR||2)};
+}
+build();
+
+function relaxPlanets(){
+  if(!VW||!DPR) return;
+  const R=baseR();
+  for(let iter=0;iter<120;iter++){
+    let moved=false;
+    for(let a=0;a<planets.length;a++){
+      for(let b=a+1;b<planets.length;b++){
+        const pa=planets[a], pb=planets[b];
+        const ax=Math.cos(pa.ang)*R*pa.dist, ay=Math.sin(pa.ang)*R*pa.dist;
+        const bx=Math.cos(pb.ang)*R*pb.dist, by=Math.sin(pb.ang)*R*pb.dist;
+        const d=Math.hypot(ax-bx,ay-by)||0.001;
+        const need=(pa.size+pb.size)*DPR + 54;
+        if(d<need){
+          const overlap=(need-d);
+          const nx=(ax-bx)/d, ny=(ay-by)/d;
+          const push=overlap*0.5;
+          pa.ang+=Math.atan2(ny,nx)*push/R*0.4;
+          pa.dist=Math.min(0.95,Math.max(0.28,pa.dist+push/R*0.15));
+          pb.ang+=Math.atan2(-ny,-nx)*push/R*0.4;
+          pb.dist=Math.min(0.95,Math.max(0.28,pb.dist-push/R*0.15));
+          moved=true;
+        }
+      }
+    }
+    if(!moved) break;
+  }
+}
+
+function place(ang,dist){
+  const r=baseR()*radiusScale*dist;
+  return {x:cx()+Math.cos(ang)*r,y:cy()+Math.sin(ang)*r};
+}
+/* posición de cuerpos lejanos: NO se achican con radiusScale */
+/* posición absoluta en pantalla para cuerpos lejanos */
+/* posición flotante para cuerpos lejanos — arriba y abajo, con movimiento suave */
+function placeFarAbs(isTop, time){
+  const t=time||0;
+  // flotación: ±18px horizontal, ±10px vertical, muy lenta
+  const fx=cx() + Math.sin(t*0.00028+1.2)*18*DPR;
+  const fy=isTop
+    ? 78*DPR + Math.sin(t*0.00022)*10*DPR
+    : H - 150*DPR + Math.sin(t*0.00019+2.1)*10*DPR;
+  return {x:fx, y:fy};
+}
+
+/* ---- campo de estrellas ---- */
+let bg=[];
+const STAR_TEMPS=['#9bb8ff','#aecbff','#cfe0ff','#ffffff','#fff6e8','#ffe8c4','#ffd2a0','#ffb98a'];
+function makeField(){
+  bg=[];
+  const n=Math.floor((VW*VH)/520);
+  for(let i=0;i<n;i++){
+    const mag=Math.pow(Math.random(),3.2);
+    bg.push({x:Math.random(),y:Math.random(),r:(0.25+mag*2.6)*DPR,a:0.12+mag*0.88,
+      col:STAR_TEMPS[Math.floor(Math.random()*STAR_TEMPS.length)],bloom:mag>0.78,
+      tw:Math.random()*6.28,sp:0.003+Math.random()*0.02});
+  }
+}
+makeField();
+
+/* ---- nebulosa ---- */
+let nebula=document.createElement('canvas');
+function valueNoise(seed,G){
+  G=G||64;const grid=new Float32Array(G*G);
+  let s=seed;const rnd=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};
+  for(let i=0;i<grid.length;i++)grid[i]=rnd();
+  return(x,y)=>{
+    const fx=x*(G-1),fy=y*(G-1),ix=Math.floor(fx),iy=Math.floor(fy);
+    const tx=fx-ix,ty=fy-iy,sx=tx*tx*(3-2*tx),sy=ty*ty*(3-2*ty);
+    const a=grid[iy*G+ix],b=grid[iy*G+Math.min(ix+1,G-1)];
+    const c=grid[Math.min(iy+1,G-1)*G+ix],d=grid[Math.min(iy+1,G-1)*G+Math.min(ix+1,G-1)];
+    return(a*(1-sx)+b*sx)*(1-sy)+(c*(1-sx)+d*sx)*sy;
+  };
+}
+function buildNebula(){
+  const NW=Math.min(VW,520),NH=Math.min(VH,900);
+  nebula.width=NW;nebula.height=NH;
+  const nctx=nebula.getContext('2d');
+  const img=nctx.createImageData(NW,NH);const d=img.data;
+  const freqs=[3,6,12,24,48],amps=[0.55,0.28,0.14,0.07,0.04];
+  const oct=freqs.map((g,i)=>valueNoise(7+i*101,g));
+  const dfreq=[5,11,22],damp=[0.5,0.3,0.2];
+  const dn=dfreq.map((g,i)=>valueNoise(54321+i*77,g));
+  const ccx=0.47;
+  let fmin=1e9,fmax=-1e9;const fbuf=new Float32Array(NW*NH);
+  for(let y=0;y<NH;y++)for(let x=0;x<NW;x++){
+    const u=x/NW,v=y/NH;let f=0;
+    for(let o=0;o<5;o++)f+=oct[o](u,v)*amps[o];
+    fbuf[y*NW+x]=f;if(f<fmin)fmin=f;if(f>fmax)fmax=f;
+  }
+  let dmin=1e9,dmax=-1e9;const dbuf=new Float32Array(NW*NH);
+  for(let y=0;y<NH;y++)for(let x=0;x<NW;x++){
+    const u=x/NW,v=y/NH;let dd=0;
+    for(let o=0;o<3;o++)dd+=dn[o](u,v)*damp[o];
+    dbuf[y*NW+x]=dd;if(dd<dmin)dmin=dd;if(dd>dmax)dmax=dd;
+  }
+  for(let y=0;y<NH;y++)for(let x=0;x<NW;x++){
+    const i=y*NW+x,u=x/NW,v=y/NH;
+    let f=(fbuf[i]-fmin)/(fmax-fmin);f=Math.pow(f,2.2);
+    const dx=u-ccx,dy=v-0.5,rad=Math.sqrt(dx*dx*1.25+dy*dy);
+    const fall=Math.pow(Math.max(0,1-rad*1.3),1.3);
+    const dens=Math.min(1,f*fall*1.6);
+    let dust=(dbuf[i]-dmin)/(dmax-dmin);
+    dust=Math.pow(Math.max(0,dust-0.45),1.3)*1.6;
+    const warm=Math.pow(Math.max(0,dens-0.5),1.4)*2.2;
+    let R=warm*235+dens*18,Gc=dens*150+warm*150+dens*dens*60,B=dens*150+dens*120+40;
+    const occ=Math.max(0.05,1-dust);R*=occ;Gc*=occ;B*=occ;
+    const k=i*4;
+    d[k]=Math.min(255,R);d[k+1]=Math.min(255,Gc);d[k+2]=Math.min(255,B);d[k+3]=Math.min(255,dens*255*occ);
+  }
+  nctx.putImageData(img,0,0);
+  const tmp=document.createElement('canvas');tmp.width=NW>>1;tmp.height=NH>>1;
+  const t=tmp.getContext('2d');t.imageSmoothingEnabled=true;t.drawImage(nebula,0,0,NW>>1,NH>>1);
+  nctx.clearRect(0,0,NW,NH);nctx.imageSmoothingEnabled=true;nctx.drawImage(tmp,0,0,NW,NH);
+}
+buildNebula();
+addEventListener('resize',()=>{makeField();buildNebula();});
+
+/* ---- render ---- */
+function frame(now){
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='#01020a';ctx.fillRect(0,0,W,H);
+
+  ctx.save();ctx.globalCompositeOperation='screen';
+  const breathe=1+0.03*Math.sin(now*0.00018);
+  const drift=Math.sin(now*0.00003)*12*DPR;
+  const nw=W*1.25*breathe,nh=H*1.25*breathe;
+  ctx.globalAlpha=0.92;ctx.drawImage(nebula,cx()-nw/2+drift,cy()-nh/2-drift*0.5,nw,nh);
+  ctx.globalAlpha=0.4;ctx.translate(cx(),cy());ctx.rotate(0.6);ctx.translate(-cx(),-cy());
+  ctx.drawImage(nebula,cx()-nw/2-drift,cy()-nh/2+drift,nw*1.1,nh*1.1);ctx.restore();
+
+  ctx.globalCompositeOperation='lighter';
+  for(const s of bg){
+    s.tw+=s.sp;
+    const a=s.a*(0.6+0.4*Math.sin(s.tw)),x=s.x*W,y=s.y*H,r=s.r;
+    const gg=ctx.createRadialGradient(x,y,0,x,y,r*4.5);
+    gg.addColorStop(0,rgba(s.col,a));gg.addColorStop(0.4,rgba(s.col,a*0.25));gg.addColorStop(1,rgba(s.col,0));
+    ctx.fillStyle=gg;ctx.beginPath();ctx.arc(x,y,r*4.5,0,6.28);ctx.fill();
+    ctx.fillStyle=rgba('#ffffff',a);ctx.beginPath();ctx.arc(x,y,r*0.7,0,6.28);ctx.fill();
+    if(s.bloom){ctx.strokeStyle=rgba(s.col,a*0.5);ctx.lineWidth=DPR*0.6;const L=r*6;
+      ctx.beginPath();ctx.moveTo(x-L,y);ctx.lineTo(x+L,y);ctx.moveTo(x,y-L);ctx.lineTo(x,y+L);ctx.stroke();}
+  }
+  ctx.globalCompositeOperation='source-over';
+
+  const gt=now*0.00004;
+
+  /* ── BORDE DE LA GALAXIA: anillo límite que encierra lo tuyo ──
+     Todo lo de adentro es "tu galaxia"; los cuerpos lejanos quedan fuera.
+     Se achica junto con la galaxia (usa radiusScale). */
+  const edgeR=baseR()*radiusScale*1.12;
+  // halo interior: niebla galáctica que se desvanece hacia el borde
+  const halo=ctx.createRadialGradient(cx(),cy(),edgeR*0.5,cx(),cy(),edgeR*1.18);
+  halo.addColorStop(0,'rgba(46,230,232,0)');
+  halo.addColorStop(0.82,'rgba(46,230,232,0)');
+  halo.addColorStop(0.92,'rgba(46,230,232,.05)');
+  halo.addColorStop(1,'rgba(46,230,232,0)');
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx(),cy(),edgeR*1.18,0,6.28);ctx.fill();ctx.restore();
+  // anillo límite punteado, luminoso y latiente
+  ctx.save();
+  const pulse=0.5+0.5*Math.sin(now*0.0014);
+  ctx.setLineDash([1.5*DPR,7*DPR]);
+  ctx.strokeStyle=`rgba(46,230,232,${0.20+pulse*0.18})`;
+  ctx.lineWidth=1.4*DPR;
+  ctx.beginPath();ctx.arc(cx(),cy(),edgeR,0,6.28);ctx.stroke();
+  // segundo anillo más tenue justo afuera, refuerza la idea de "muro"
+  ctx.setLineDash([1*DPR,10*DPR]);
+  ctx.strokeStyle='rgba(46,230,232,.10)';
+  ctx.lineWidth=1*DPR;
+  ctx.beginPath();ctx.arc(cx(),cy(),edgeR*1.05,0,6.28);ctx.stroke();
+  ctx.restore();
+  // (sin etiqueta de texto — el anillo habla por sí solo)
+
+  /* órbitas */
+  ctx.save();ctx.setLineDash([2*DPR,5*DPR]);
+  for(const pl of planets){
+    if(!pl.alive)continue;
+    const rr=baseR()*radiusScale*pl.dist;
+    ctx.strokeStyle=(pl===activePlanet)?'rgba(46,230,232,.5)':'rgba(120,150,220,.13)';
+    ctx.lineWidth=(pl===activePlanet?1.4:1)*DPR;
+    ctx.beginPath();ctx.arc(cx(),cy(),rr,0,6.28);ctx.stroke();
+  }
+  ctx.restore();
+
+  /* filamentos a estrellas vecinas */
+  const yp=place(you.target.ang+gt,you.target.dist);
+  ctx.globalCompositeOperation='lighter';
+  for(const st of stars){
+    const p=place(st.ang+gt*2.2,st.dist);
+    const active=(st===activeStar);
+    const lg=ctx.createLinearGradient(yp.x,yp.y,p.x,p.y);
+    lg.addColorStop(0,active?'rgba(46,230,232,.4)':'rgba(46,230,232,.10)');
+    lg.addColorStop(1,rgba(st.n.glow,active?.2:.03));
+    ctx.strokeStyle=lg;ctx.lineWidth=(active?2:1)*DPR;
+    ctx.beginPath();ctx.moveTo(yp.x,yp.y);ctx.lineTo(p.x,p.y);ctx.stroke();
+  }
+  ctx.globalCompositeOperation='source-over';
+
+  /* CUERPOS LEJANOS — solo en fase de exploración, fuera de la galaxia */
+  if(phase==='explore'){
+    // canción lejana: arriba centrada, posición absoluta
+    farPlanet.rot+=farPlanet.rotSpd;
+    const fp=placeFarAbs(true,now);farPlanet.ox=fp.x;farPlanet.oy=fp.y;
+    const fActive=(activePlanet===farPlanet);
+    const fr=farPlanet.size*DPR*(fActive?1.3:1);
+    ctx.save();ctx.globalAlpha=fActive?1:0.55;
+    drawPlanet(fp.x,fp.y,fr,farPlanet,(cx()-fp.x)/(Math.hypot(cx()-fp.x,cy()-fp.y)||1),(cy()-fp.y)/(Math.hypot(cx()-fp.x,cy()-fp.y)||1));
+    ctx.restore();
+    if(fActive){ctx.strokeStyle='rgba(208,96,192,.95)';ctx.lineWidth=1.6*DPR;
+      ctx.beginPath();ctx.arc(fp.x,fp.y,fr+10*DPR+2.5*Math.sin(now*.006),0,6.28);ctx.stroke();}
+    drawLabel(farPlanet.s.t,fp.x,fp.y+fr+6*DPR,fActive,1,true);
+
+    // perfil lejano: abajo centrado, posición absoluta
+    farStar.tw+=0.03;
+    const fs=placeFarAbs(false,now);farStar.px=fs.x;farStar.py=fs.y;
+    const sActive=(activeStar===farStar);
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=sActive?1:0.6;
+    drawStar(fs.x,fs.y,(sActive?11:7)*DPR,'#ffffff',FAR_NEIGHBOR.glow,sActive?1:0.7);
+    ctx.restore();
+    if(sActive){ctx.save();ctx.globalCompositeOperation='source-over';
+      ctx.strokeStyle=rgba(FAR_NEIGHBOR.glow,.9);ctx.lineWidth=1.4*DPR;
+      ctx.beginPath();ctx.arc(fs.x,fs.y,7*DPR+12*DPR+2*Math.sin(now*.006),0,6.28);ctx.stroke();ctx.restore();}
+    // etiqueta del perfil lejano
+    drawLabel(FAR_NEIGHBOR.ttl.split('—')[0].trim(),fs.x,fs.y+10*DPR,sActive,1,true);
+  }
+
+  /* planetas */
+  for(const pl of planets){
+    if(!pl.alive||now<pl.born)continue;
+    pl.ang+=pl.spin;pl.rot+=pl.rotSpd;
+    const p=place(pl.ang+gt,pl.dist);pl.ox=p.x;pl.oy=p.y;
+    const isActive=(pl===activePlanet);
+    const rs=Math.max(radiusScale,0.18);
+    const r=pl.size*DPR*(isActive?1.18:1)*rs;
+    const ldx=cx()-p.x,ldy=cy()-p.y,lm=Math.hypot(ldx,ldy)||1;
+    if(isActive){
+      const hg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*2.6);
+      hg.addColorStop(0,'rgba(46,230,232,.45)');hg.addColorStop(.5,'rgba(46,230,232,.12)');hg.addColorStop(1,'rgba(46,230,232,0)');
+      ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle=hg;ctx.beginPath();ctx.arc(p.x,p.y,r*2.6,0,6.28);ctx.fill();ctx.restore();
+    }
+    drawPlanet(p.x,p.y,r,pl,ldx/lm,ldy/lm);
+    if(isActive){ctx.strokeStyle='rgba(46,230,232,.95)';ctx.lineWidth=1.6*DPR;
+      ctx.beginPath();ctx.arc(p.x,p.y,r+10*DPR*rs+2.5*Math.sin(now*.006),0,6.28);ctx.stroke();}
+    drawLabel(pl.s.t,p.x,p.y+r+6*DPR*rs,isActive,Math.max(rs,0.5));
+  }
+
+  /* estrellas vecinas */
+  ctx.globalCompositeOperation='lighter';
+  for(const st of stars){
+    st.tw+=0.03;
+    const p=place(st.ang+gt*2.2,st.dist);st.px=p.x;st.py=p.y;
+    const isActive=(st===activeStar);
+    const fl=isActive?1:(0.55+0.25*Math.sin(st.tw));
+    const rs=Math.max(radiusScale,0.18);
+    drawStar(p.x,p.y,(isActive?11:7)*DPR*rs,'#ffffff',st.n.glow,fl);
+    if(isActive){ctx.save();ctx.globalCompositeOperation='source-over';
+      ctx.strokeStyle=rgba(st.n.glow,.9);ctx.lineWidth=1.4*DPR;
+      ctx.beginPath();ctx.arc(p.x,p.y,7*DPR*rs+10*DPR*rs+2*Math.sin(now*.006),0,6.28);ctx.stroke();ctx.restore();}
+  }
+
+  /* tu estrella */
+  you.pulse+=0.04;
+  const tp=place(you.target.ang+gt,you.target.dist);
+  you.x=you.x?you.x+(tp.x-you.x)*0.05:tp.x;
+  you.y=you.y?you.y+(tp.y-you.y)*0.05:tp.y;
+  drawStar(you.x,you.y,12*DPR*Math.max(radiusScale*0.7+0.3,0.5),'#fffaf0','#ffd27a',1);
+  ctx.globalCompositeOperation='source-over';
+  requestAnimationFrame(frame);
+}
+
+function drawPlanet(x,y,r,pl,lx,ly){
+  const pal=pl.pal;ctx.save();
+  let atm=ctx.createRadialGradient(x,y,r*0.9,x,y,r*1.35);
+  atm.addColorStop(0,rgba(pal.band,0.18));atm.addColorStop(1,rgba(pal.band,0));
+  ctx.fillStyle=atm;ctx.beginPath();ctx.arc(x,y,r*1.35,0,6.28);ctx.fill();
+  ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.clip();
+  ctx.fillStyle=pal.base;ctx.fillRect(x-r,y-r,r*2,r*2);
+  ctx.globalAlpha=0.5;
+  for(let b=0;b<pl.bands;b++){
+    const yy=y-r+((b+0.5)/pl.bands)*r*2+Math.sin(pl.rot+b)*r*0.12;
+    const bh=r*2/pl.bands*0.7;
+    const bg2=ctx.createLinearGradient(0,yy-bh/2,0,yy+bh/2);
+    bg2.addColorStop(0,rgba(pal.base,0));bg2.addColorStop(0.5,rgba(b%2?pal.band:pal.spot,0.55));bg2.addColorStop(1,rgba(pal.base,0));
+    ctx.fillStyle=bg2;ctx.fillRect(x-r,yy-bh/2,r*2,bh);
+  }
+  const sx=x+Math.cos(pl.rot)*r*0.4,sy=y+r*0.15,spotR=r*0.32;
+  if(Math.cos(pl.rot)>-0.2){
+    const sg=ctx.createRadialGradient(sx,sy,0,sx,sy,spotR);
+    sg.addColorStop(0,rgba(pal.spot,0.7));sg.addColorStop(1,rgba(pal.spot,0));
+    ctx.fillStyle=sg;ctx.beginPath();ctx.ellipse(sx,sy,spotR,spotR*0.7,0,0,6.28);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  const shade=ctx.createRadialGradient(x+lx*r*0.8,y+ly*r*0.8,r*0.1,x,y,r*1.25);
+  shade.addColorStop(0,'rgba(255,250,235,0.35)');shade.addColorStop(0.35,'rgba(255,255,255,0)');
+  shade.addColorStop(0.62,'rgba(0,0,8,0)');shade.addColorStop(1,'rgba(0,0,10,0.92)');
+  ctx.fillStyle=shade;ctx.fillRect(x-r,y-r,r*2,r*2);
+  const sp=ctx.createRadialGradient(x+lx*r*0.55,y+ly*r*0.55,0,x+lx*r*0.55,y+ly*r*0.55,r*0.38);
+  sp.addColorStop(0,'rgba(255,255,255,0.22)');sp.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=sp;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore();
+  ctx.strokeStyle=rgba(pal.band,0.5);ctx.lineWidth=1.2*DPR;ctx.beginPath();
+  const ea=Math.atan2(ly,lx);ctx.arc(x,y,r+0.5*DPR,ea-1.4,ea+1.4);ctx.stroke();
+  if(pl.ring){ctx.save();ctx.translate(x,y);ctx.rotate(pl.tilt);ctx.scale(1,0.32);
+    ctx.strokeStyle=rgba(pal.band,0.5);ctx.lineWidth=2.5*DPR;ctx.beginPath();ctx.arc(0,0,r*1.7,0,6.28);ctx.stroke();
+    ctx.strokeStyle=rgba(pal.spot,0.35);ctx.lineWidth=1.5*DPR;ctx.beginPath();ctx.arc(0,0,r*2.05,0,6.28);ctx.stroke();ctx.restore();}
+  ctx.restore();
+}
+
+function drawLabel(text,x,y,active,scale,far){
+  scale=scale||1;
+  ctx.save();
+  const fs=(active?14:12)*DPR*scale;
+  ctx.font=`${fs}px 'Space Mono',monospace`;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  const w=ctx.measureText(text).width,padX=7*DPR*scale,h=(active?18:16)*DPR*scale;
+  ctx.fillStyle=far?(active?'rgba(208,96,192,.20)':'rgba(40,12,38,.6)'):(active?'rgba(46,230,232,.16)':'rgba(6,10,28,.60)');
+  const bx=x-w/2-padX,bw=w+padX*2;
+  if(ctx.roundRect){ctx.beginPath();ctx.roundRect(bx,y,bw,h,h/2);ctx.fill();}
+  else ctx.fillRect(bx,y,bw,h);
+  ctx.fillStyle=far?(active?'#e88ad8':'rgba(232,180,228,.9)'):(active?'#2ee6e8':'rgba(232,236,255,.9)');
+  ctx.fillText(text,x,y+(active?3:2.5)*DPR*scale);ctx.restore();
+}
+
+function drawStar(x,y,r,coreCol,glowCol,inten){
+  let g=ctx.createRadialGradient(x,y,0,x,y,r*7);
+  g.addColorStop(0,rgba(glowCol,0.55*inten));g.addColorStop(0.18,rgba(glowCol,0.28*inten));
+  g.addColorStop(0.5,rgba(glowCol,0.08*inten));g.addColorStop(1,rgba(glowCol,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r*7,0,6.28);ctx.fill();
+  g=ctx.createRadialGradient(x,y,0,x,y,r*2.6);
+  g.addColorStop(0,rgba(coreCol,0.9*inten));g.addColorStop(0.5,rgba(glowCol,0.4*inten));g.addColorStop(1,rgba(glowCol,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r*2.6,0,6.28);ctx.fill();
+  g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,rgba('#ffffff',inten));g.addColorStop(0.6,rgba(coreCol,0.95*inten));g.addColorStop(1,rgba(coreCol,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.fill();
+  ctx.strokeStyle=rgba('#ffffff',0.5*inten);ctx.lineWidth=DPR*0.8;const L=r*5.5;
+  ctx.beginPath();ctx.moveTo(x-L,y);ctx.lineTo(x+L,y);ctx.moveTo(x,y-L);ctx.lineTo(x,y+L);ctx.stroke();
+  ctx.strokeStyle=rgba(glowCol,0.3*inten);const D=r*3.2;
+  ctx.beginPath();ctx.moveTo(x-D,y-D);ctx.lineTo(x+D,y+D);ctx.moveTo(x-D,y+D);ctx.lineTo(x+D,y-D);ctx.stroke();
+}
+
+function rgba(hex,a){
+  if(hex[0]==='#'){const n=parseInt(hex.slice(1),16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
+  return hex;
+}
+requestAnimationFrame(frame);
+
+/* ---- hit testing ---- */
+function hit(mx,my){
+  mx*=DPR;my*=DPR;
+  // cuerpos lejanos primero (solo en explore)
+  if(phase==='explore'){
+    if(farStar&&Math.hypot(mx-farStar.px,my-farStar.py)<24*DPR)return {type:'farstar',obj:farStar};
+    if(farPlanet&&Math.hypot(mx-farPlanet.ox,my-farPlanet.oy)<Math.max(farPlanet.size*DPR+10*DPR,20*DPR))return {type:'farplanet',obj:farPlanet};
+  }
+  for(const st of stars){if(Math.hypot(mx-st.px,my-st.py)<22*DPR)return {type:'star',obj:st};}
+  for(const pl of planets){if(pl.alive&&Math.hypot(mx-pl.ox,my-pl.oy)<Math.max(pl.size*DPR*Math.max(radiusScale,0.18)+8*DPR,18*DPR))return {type:'planet',obj:pl};}
+  if(Math.hypot(mx-you.x,my-you.y)<26*DPR)return {type:'you',obj:you};
+  return null;
+}
+cv.addEventListener('pointermove',e=>{
+  const r=app.getBoundingClientRect();
+  cv.style.cursor=hit(e.clientX-r.left,e.clientY-r.top)?'pointer':'default';
+});
+cv.addEventListener('click',e=>{
+  const r=app.getBoundingClientRect();
+  const lx=e.clientX-r.left,ly=e.clientY-r.top;
+  const h=hit(lx,ly);if(!h)return;
+  emit('touch',{nx:lx/VW,ny:ly/VH,col:(h.type.includes('star')?(h.obj.n?h.obj.n.glow:'#e88ad8'):h.type.includes('planet')?'#bcd4ff':'#ffd27a')});
+  if(phase==='explore'){
+    if(h.type==='you'){
+      activeStar=null;activePlanet=null;emit('highlight',{kind:'you'});
+      openCard(NEIGHBORS[0],lx,ly,false);read(`Esta estrella representa tu perfil musical. Toca las demás estrellas: son tus vecinos oyentes.`);exploredYou=true;maybeReveal();
+    }
+    if(h.type==='star'){
+      activeStar=h.obj;activePlanet=null;emit('highlight',{kind:'star',idx:h.obj.idx-1});
+      openCard(h.obj.n,lx,ly,false);exploredStars.add(h.obj.idx);maybeReveal();
+    }
+    if(h.type==='planet'){
+      activePlanet=h.obj;activeStar=null;emit('highlight',{kind:'planet',idx:h.obj.songIdx});
+      setNowPlaying(h.obj.s);
+      exploredPlanets.add(h.obj.songIdx);
+      read(`"${h.obj.s.t}" — ${h.obj.s.a}. Su tamaño depende de contratos con disqueras o popularidad: mientras más popular, más grande y con más probabilidad de recomendación.`);maybeReveal();
+    }
+    if(h.type==='farplanet'){
+      activePlanet=h.obj;activeStar=null;
+      openCard({tag:"Canción lejana",glow:"#e88ad8",
+        ttl:`"${FAR_SONG.t}" — fuera de tu galaxia`,
+        bd:`Esta canción <b>existe</b>, pero el sistema <b>jamás te la mostrará</b>. Está demasiado lejos de tu perfil: para el algoritmo, no existe para ti. Nunca llegará a tus recomendaciones.`},lx,ly,true);
+      read(`"${FAR_SONG.t}" — una canción que el sistema nunca te va a recomendar.`);
+      exploredFarPlanet=true;maybeReveal();
+    }
+    if(h.type==='farstar'){
+      activeStar=h.obj;activePlanet=null;
+      openCard(FAR_NEIGHBOR,lx,ly,true);
+      exploredFarStar=true;maybeReveal();
+    }
+  } else if(phase==='choose'){
+    if(h.type==='planet')chooseSafe(h.obj);
+  }
+});
+
+function openCard(n,x,y,far){
+  document.getElementById('cardTag').textContent=n.tag;
+  document.getElementById('cardTag').style.background=rgba(n.glow,.16);
+  document.getElementById('cardTag').style.color=n.glow;
+  document.getElementById('cardTtl').textContent=n.ttl;
+  document.getElementById('cardBd').innerHTML=n.bd;
+  card.classList.toggle('far',!!far);
+  let lx=Math.min(x+18,VW-312),ly=Math.min(y-20,VH-220);ly=Math.max(ly,20);lx=Math.max(lx,10);
+  card.style.left=lx+'px';card.style.top=ly+'px';card.classList.add('on');
+}
+document.getElementById('cardX').onclick=()=>card.classList.remove('on');
+document.getElementById('finaleClose').onclick=()=>document.getElementById('finalePanel').classList.remove('on');
+
+/* ---- flujo de fases ---- */
+let phase='intro';
+const reads=document.getElementById('reads');
+const card=document.getElementById('card');
+const hintTop=document.getElementById('hintTop');
+const hintBottom=document.getElementById('hintBottom');
+const counter=document.getElementById('counterBox');
+const cta=document.getElementById('cta');
+const latentPanel=document.getElementById('latentPanel');
+let readTimer;
+function read(txt){reads.style.opacity=0;clearTimeout(readTimer);readTimer=setTimeout(()=>{reads.textContent=txt;reads.style.opacity=1;},260);}
+function setCount(){document.getElementById('cnum').textContent=planets.filter(p=>p.alive).length;}
+function showHintTop(t){hintTop.textContent=t;hintTop.classList.add('on');}
+function hideHintTop(){hintTop.classList.remove('on');}
+function showHintBottom(t){hintBottom.textContent=t;hintBottom.classList.add('on');}
+function hideHintBottom(){hintBottom.classList.remove('on');}
+
+let exploredYou=false;
+let exploredFarPlanet=false, exploredFarStar=false;
+const exploredPlanets=new Set();
+const exploredStars=new Set();
+
+function maybeReveal(){
+  const totalPlanets=planets.filter(p=>p.alive).length;
+  const totalStars=stars.length;
+
+  if(exploredYou && exploredPlanets.size>=totalPlanets && exploredStars.size>=totalStars
+     && exploredFarPlanet && exploredFarStar && phase==='explore'){
+    phase='latent';
+    hideHintTop();
+    setTimeout(()=>{
+      card.classList.remove('on');
+      setTimeout(()=>{ latentPanel.classList.add('on'); },1800);
+    },2500);
+  }
+}
+
+document.getElementById('enter').onclick=()=>{
+  document.getElementById('intro').classList.add('gone');
+  phase='explore';
+  counter.style.transition='opacity 1s';counter.style.opacity=1;setCount();
+  emit('connect');pushState();
+  read('Conectado. Esta galaxia está viva: cada planeta es una de tus canciones.');
+  // sin mensaje guía — el usuario explora libremente
+};
+
+document.getElementById('lpBtn').onclick=()=>{
+  latentPanel.classList.remove('on');
+  phase='choose';
+  document.getElementById('phaseTag').textContent='Fase 02 · Entrenamiento';
+  read('Elige una canción, la que quieras, una que te represente.');
+  showHintTop('Elige una canción para comenzar');
+};
+
+/* ---- FASE: elegir y entrenar ---- */
+let safePlanet=null;
+let qIndex=0;
+let interactionCount=0;
+const quiz=document.getElementById('quiz');
+const why=document.getElementById('why');
+
+cta.addEventListener('click',()=>{
+  if(phase==='done')finish();
+});
+
+function chooseSafe(pl){
+  safePlanet=pl;hideHintTop();
+  phase='quiz';qIndex=0;interactionCount=0;
+  atSafe=true;
+  read('Esa será tu punto de partida. Escucha e interactúa.');
+  askAbout(pl);
+}
+
+let qStart=0;
+function askAbout(pl){
+  activePlanet=pl;activeStar=null;
+  emit('highlight',{kind:'planet',idx:pl.songIdx});
+  setNowPlaying(pl.s);
+  document.getElementById('qText').textContent=QUESTIONS[Math.min(qIndex,QUESTIONS.length-1)](pl.s);
+  quiz.classList.add('on');
+  why.classList.add('on');
+  closeWhy();
+  whyPill.classList.remove('active');
+  qStart=performance.now();
+}
+
+const qSongEl=document.getElementById('qSong');
+function setNowPlaying(song){
+  if(qSongEl) qSongEl.textContent=song.t+(song.a?' — '+song.a:'');
+}
+
+let lastState={};
+let atSafe=true;  // ¿la estrella está actualmente en la canción segura?
+
+function answer(like){
+  const ms=performance.now()-qStart;
+  quiz.classList.remove('on');
+  interactionCount++;
+  emit('answer',{negative:!like});
+
+  /* La estrella alterna: si está en la segura va a otra; si está en otra vuelve a la segura.
+     SOLO se achica la galaxia (se borra 1 órbita) cuando VUELVE a la canción segura. */
+  const goesToSafe = !atSafe;   // si no estaba en la segura, ahora vuelve
+
+  setTimeout(()=>{
+    let next;
+    if(goesToSafe){
+      /* vuelve a la segura → AQUÍ se achica: borrar 1 planeta y reducir radio */
+      next=safePlanet;
+      const toKill=planets.filter(p=>p.alive&&p!==safePlanet)
+        .sort((a,b)=>b.dist-a.dist)[0];
+      if(toKill) toKill.alive=false;
+      radiusScale=Math.max(radiusScale*0.88,0.14);
+      read('Volviste a tu canción de siempre. Tu galaxia se achicó: una órbita menos.');
+      atSafe=true;
+    } else {
+      /* va a una canción nueva → NO se achica, solo se mueve la estrella */
+      let pool=planets.filter(p=>p.alive&&p!==safePlanet&&!visited.has(p));
+      if(pool.length===0) pool=planets.filter(p=>p.alive&&p!==safePlanet);
+      pool.sort((a,b)=>like?a.dist-b.dist:b.dist-a.dist);
+      next=pool[0]||safePlanet;
+      visited.add(next);
+      read(like?'Le diste like. El sistema te lleva a otra canción cercana.':'Hiciste skip. El sistema te mueve a otra órbita.');
+      atSafe=false;
+    }
+    setCount();emit('shrink',{radius:radiusScale});
+
+    you.target.ang=next.ang+0.25;
+    you.target.dist=Math.max(next.dist-0.06,0.1);
+    pushState();
+
+    lastState={answerMs:ms,returnedToSafe:goesToSafe,idx:qIndex,like};
+    whyExp.innerHTML=`<span class="lbl">Explicación del movimiento</span>${whyText(lastState)}`;
+    closeWhy();
+    whyPill.classList.add('active');
+    qIndex++;
+
+    pendingNext=next;
+    const aliveCount=planets.filter(p=>p.alive).length;
+    /* Termina cuando solo queda 1 órbita (la canción segura) y la estrella ya está en ella */
+    pendingEnd=(aliveCount<=1);
+    contBtn.textContent=pendingEnd?'Ver el resultado →':'Continuar →';
+    contBtn.classList.add('show');
+  },520);
+}
+let visited=new Set();
+
+document.getElementById('bLike').onclick=()=>answer(true);
+document.getElementById('bSkip').onclick=()=>answer(false);
+
+let pendingNext=null,pendingEnd=false;
+const contBtn=document.getElementById('cont');
+contBtn.onclick=()=>{
+  contBtn.classList.remove('show');
+  closeWhy();
+  whyPill.classList.remove('active');
+  if(pendingEnd)endTraining();
+  else if(pendingNext)askAbout(pendingNext);
+};
+
+const whyExp=document.getElementById('whyExp');
+const whyPill=document.getElementById('whyPill');
+whyPill.onclick=()=>{
+  if(!whyPill.classList.contains('active'))return;
+  whyExp.classList.contains('open')?closeWhy():whyExp.classList.add('open');
+};
+function closeWhy(){whyExp.classList.remove('open');}
+
+function endTraining(){
+  quiz.classList.remove('on');
+  contBtn.classList.remove('show');
+  radiusScale=0.13;
+  planets.forEach(p=>{if(p!==safePlanet)p.alive=false;});setCount();
+  you.target.ang=safePlanet.ang+0.25;you.target.dist=0.04;
+  phase='done';emit('collapse');pushState();
+  setNowPlaying(safePlanet.s);
+  document.getElementById('phaseTag').textContent='Fase 03 · El borde';
+  read('Tu galaxia entera cabe ahora en una sola canción: la primera que elegiste.');
+  whyExp.innerHTML=`<span class="lbl">¿Por qué quedó así?</span>El espacio latente fue construido con un objetivo: <b>retenerte dentro de la plataforma el mayor tiempo posible</b>. Por eso te corrige hacia lo seguro y borra lo incierto.`;
+  whyPill.textContent='⌖ ¿Por qué quedó así?';
+  why.classList.add('on');
+  closeWhy();
+  whyPill.classList.add('active');
+  setTimeout(()=>{
+    cta.textContent='Reimaginar mi galaxia →';cta.classList.add('show');cta.classList.remove('ghost');
+    showHintBottom('Fin de la Parte 1. La Parte 2 es tuya.');
+  },2200);
+}
+
+function finish(){
+  read('Parte 2 — Especulación: redefine con qué se construye tu galaxia y para qué.');
+  cta.classList.remove('show');hideHintBottom();
+  radiusScale=1;planets.forEach((p,i)=>{p.alive=true;p.born=performance.now()+i*40;});setCount();
+  emit('rebirth');pushState();
+  document.getElementById('phaseTag').textContent='→ Parte 2 · Especulación';
+  card.classList.remove('on');
+  setTimeout(()=>{
+    document.getElementById('finalePanel').classList.add('on');
+  },700);
+}
+
+function pushState(){
+  emit('state',{state:{phase,radius:radiusScale,count:planets.filter(p=>p.alive).length,
+    you:{ang:you.target.ang,dist:you.target.dist,x:(you.x||cx())-cx(),y:(you.y||cy())-cy()}}});
+}
+})();
+
+</script>
