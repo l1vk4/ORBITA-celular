@@ -1,3 +1,5 @@
+<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
+     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Space+Mono:wght@400;700&display=swap');
   :root{
@@ -21,22 +23,22 @@
   .logo-corner img{width:100%;height:100%;object-fit:contain;opacity:.95}
 
   .brand{top:22px;left:26px;}
-  .brand .k{font-family:'Space Mono';font-size:10px;letter-spacing:.32em;color:var(--cian);text-transform:uppercase}
-  .brand .t{font-family:'Fraunces';font-weight:300;font-style:italic;font-size:21px;color:var(--ink);margin-top:3px;letter-spacing:.01em}
+  .brand .k{font-family:'Space Mono';font-size:13px;letter-spacing:.28em;color:var(--cian);text-transform:uppercase}
+  .brand .t{font-family:'Fraunces';font-weight:300;font-style:italic;font-size:26px;color:var(--ink);margin-top:3px;letter-spacing:.01em}
 
   .hint-top{position:absolute;z-index:25;top:86px;left:50%;transform:translateX(-50%);
-    font-size:11px;letter-spacing:.12em;color:var(--ink-dim);text-transform:uppercase;
+    font-size:14px;letter-spacing:.10em;color:var(--ink-dim);text-transform:uppercase;
     opacity:0;transition:opacity .6s;text-align:center;white-space:normal;
     width:min(300px,78%);line-height:1.6;pointer-events:none}
   .hint-top.on{opacity:.75}
 
   .counter{bottom:28px;right:26px;text-align:right;z-index:12}
-  .counter .num{font-family:'Fraunces';font-size:26px;font-weight:300;color:var(--estrella);line-height:1}
-  .counter .lab{font-size:8px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase;margin-top:3px}
+  .counter .num{font-family:'Fraunces';font-size:34px;font-weight:300;color:var(--estrella);line-height:1}
+  .counter .lab{font-size:11px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase;margin-top:3px}
 
   .hud{bottom:24px;left:26px;max-width:200px}
-  .hud .phase{font-size:9px;letter-spacing:.3em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:6px}
-  .hud .reads{font-family:'Fraunces';font-size:14px;line-height:1.5;color:var(--ink);min-height:44px;transition:opacity .5s}
+  .hud .phase{font-size:12px;letter-spacing:.3em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:6px}
+  .hud .reads{font-family:'Fraunces';font-size:18px;line-height:1.5;color:var(--ink);min-height:44px;transition:opacity .5s}
 
   .card{position:absolute;z-index:20;width:min(296px,82%);background:linear-gradient(160deg,rgba(10,18,48,.96),rgba(6,10,28,.97));
     border:1px solid rgba(46,230,232,.22);border-radius:14px;padding:20px 20px 18px;
@@ -44,11 +46,17 @@
     opacity:0;transform:translateY(8px) scale(.98);pointer-events:none;transition:opacity .28s,transform .28s}
   .card.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
   .card.far{border-color:rgba(208,96,192,.4)}
-  .card .tag{display:inline-block;font-size:9px;letter-spacing:.2em;padding:4px 9px;border-radius:20px;text-transform:uppercase;margin-bottom:11px}
-  .card .ttl{font-family:'Fraunces';font-size:18px;font-weight:400;line-height:1.25;margin-bottom:8px}
-  .card .bd{font-size:12px;line-height:1.6;color:var(--ink-dim)}
+  .card .tag{display:inline-block;font-size:12px;letter-spacing:.2em;padding:4px 9px;border-radius:20px;text-transform:uppercase;margin-bottom:11px}
+  .card .ttl{font-family:'Fraunces';font-size:22px;font-weight:400;line-height:1.25;margin-bottom:8px}
+  .card .bd{font-size:15px;line-height:1.6;color:var(--ink-dim)}
   .card .bd b{color:var(--cian-glow);font-weight:400}
   .card.far .bd b{color:var(--far-glow)}
+  /* barra de cierre automático */
+  .card .close-bar{position:absolute;bottom:0;left:0;height:2px;border-radius:0 0 14px 14px;
+    background:rgba(46,230,232,.5);width:100%;transform-origin:left;
+    animation:none}
+  .card.on .close-bar{animation:shrinkBar 7s linear forwards}
+  @keyframes shrinkBar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
   .card .x{position:absolute;top:13px;right:14px;font-size:14px;color:var(--ink-dim);cursor:pointer;line-height:1}
   .card .x:hover{color:var(--ink)}
 
@@ -58,10 +66,10 @@
     background:rgba(2,3,10,.88);backdrop-filter:blur(10px);
     opacity:0;pointer-events:none;transition:opacity .7s}
   .latent-panel.on{opacity:1;pointer-events:auto}
-  .latent-panel .lp-pre{font-size:9px;letter-spacing:.32em;color:var(--cian);text-transform:uppercase;margin-bottom:14px}
+  .latent-panel .lp-pre{font-size:12px;letter-spacing:.32em;color:var(--cian);text-transform:uppercase;margin-bottom:14px}
   .latent-panel h2{font-family:'Fraunces';font-weight:300;font-size:clamp(22px,5vw,34px);line-height:1.15;color:var(--ink);margin-bottom:16px}
   .latent-panel h2 i{font-style:italic;color:var(--cian-glow)}
-  .latent-panel p{font-size:13px;line-height:1.75;color:var(--ink-dim);max-width:340px;margin-bottom:28px}
+  .latent-panel p{font-size:15px;line-height:1.75;color:var(--ink-dim);max-width:340px;margin-bottom:28px}
   .latent-panel p b{color:var(--ink);font-weight:400}
   .latent-panel .sep{width:40px;height:1px;background:rgba(46,230,232,.3);margin:0 auto 24px}
   .lp-btn{cursor:pointer;border:none;font-family:'Space Mono';font-size:12px;letter-spacing:.22em;text-transform:uppercase;
@@ -88,17 +96,17 @@
   .quiz.on{opacity:1;pointer-events:auto}
   .quiz .now{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:14px;padding:12px 16px;
     background:rgba(46,230,232,.06);border:1px solid rgba(46,230,232,.18);border-radius:14px}
-  .quiz .now .now-label{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--cian);opacity:.8}
-  .quiz .now b{font-family:'Fraunces';font-style:italic;font-weight:300;font-size:20px;color:var(--estrella);line-height:1.2;text-align:center}
+  .quiz .now .now-label{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--cian);opacity:.8}
+  .quiz .now b{font-family:'Fraunces';font-style:italic;font-weight:300;font-size:24px;color:var(--estrella);line-height:1.2;text-align:center}
   .quiz .now .now-eq{display:inline-flex;align-items:flex-end;gap:3px;height:16px;margin-bottom:2px}
   .quiz .now .now-eq i{width:3px;background:var(--cian-glow);border-radius:2px;animation:eq .9s ease-in-out infinite}
   .quiz .now .now-eq i:nth-child(1){height:7px;animation-delay:0s}
   .quiz .now .now-eq i:nth-child(2){height:14px;animation-delay:.22s}
   .quiz .now .now-eq i:nth-child(3){height:9px;animation-delay:.44s}
   @keyframes eq{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
-  .quiz .q{font-family:'Fraunces';font-style:italic;font-weight:300;font-size:20px;line-height:1.4;color:var(--ink);margin-bottom:18px}
+  .quiz .q{font-family:'Fraunces';font-style:italic;font-weight:300;font-size:22px;line-height:1.4;color:var(--ink);margin-bottom:18px}
   .quiz .row{display:flex;gap:14px;justify-content:center}
-  .quiz button{flex:1;max-width:190px;cursor:pointer;font-family:'Space Mono';font-size:12px;letter-spacing:.12em;
+  .quiz button{flex:1;max-width:190px;cursor:pointer;font-family:'Space Mono';font-size:15px;letter-spacing:.12em;
     padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:var(--ink);
     transition:all .2s;text-transform:uppercase}
   .quiz button.like:hover{border-color:var(--cian-glow);background:rgba(46,230,232,.12);color:var(--cian-glow)}
@@ -108,18 +116,18 @@
     width:min(360px,88%);opacity:0;pointer-events:none;transition:opacity .45s;text-align:center}
   .why-top.on{opacity:1;pointer-events:auto}
   .why-top .pill{cursor:pointer;display:inline-flex;align-items:center;gap:8px;
-    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);
+    font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);
     border:1px solid rgba(255,184,107,.4);border-radius:30px;padding:9px 16px;background:rgba(255,184,107,.06);
     transition:all .2s;opacity:.35;pointer-events:none;backdrop-filter:blur(6px)}
   .why-top .pill.active{opacity:1;pointer-events:auto}
   .why-top .pill.active:hover{background:rgba(255,184,107,.14)}
   .why-top .exp{margin-top:12px;text-align:left;background:linear-gradient(160deg,rgba(14,10,4,.97),rgba(6,5,12,.98));
     border:1px solid rgba(255,184,107,.22);border-radius:13px;padding:16px 17px;
-    font-size:12.5px;line-height:1.65;color:var(--ink-dim);max-height:0;overflow:hidden;opacity:0;transition:all .45s;
+    font-size:15px;line-height:1.65;color:var(--ink-dim);max-height:0;overflow:hidden;opacity:0;transition:all .45s;
     backdrop-filter:blur(8px)}
   .why-top .exp.open{max-height:360px;opacity:1}
   .why-top .exp b{color:var(--warm);font-weight:400}
-  .why-top .exp .lbl{font-size:8.5px;letter-spacing:.24em;color:var(--warm);text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
+  .why-top .exp .lbl{font-size:11px;letter-spacing:.24em;color:var(--warm);text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
 
   .cont-btn{position:absolute;z-index:42;left:50%;transform:translateX(-50%);
     bottom:100px;
@@ -147,27 +155,27 @@
     font-size:18px;color:var(--ink-dim);cursor:pointer;line-height:1;
     transition:color .2s;border:none;background:none;padding:4px 6px}
   .finale-inner .fp-close:hover{color:var(--ink)}
-  .finale-inner .fp-tag{display:inline-block;font-size:9px;letter-spacing:.2em;padding:4px 10px;
+  .finale-inner .fp-tag{display:inline-block;font-size:12px;letter-spacing:.2em;padding:4px 10px;
     border-radius:20px;text-transform:uppercase;margin-bottom:14px;
     background:rgba(46,230,232,.14);color:var(--cian-glow)}
-  .finale-inner .fp-ttl{font-family:'Fraunces';font-size:22px;font-weight:400;
+  .finale-inner .fp-ttl{font-family:'Fraunces';font-size:26px;font-weight:400;
     line-height:1.2;margin-bottom:12px;color:var(--ink)}
-  .finale-inner .fp-bd{font-size:12.5px;line-height:1.65;color:var(--ink-dim);margin-bottom:6px}
+  .finale-inner .fp-bd{font-size:15px;line-height:1.65;color:var(--ink-dim);margin-bottom:6px}
   .finale-inner .fp-bd b{color:var(--cian-glow);font-weight:400}
-  .finale-inner .fp-note{font-size:10px;color:var(--ink-dim);opacity:.55;margin-top:14px;letter-spacing:.04em}
+  .finale-inner .fp-note{font-size:12px;color:var(--ink-dim);opacity:.55;margin-top:14px;letter-spacing:.04em}
 
   .veil{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;padding:30px;
     background:radial-gradient(ellipse at center,rgba(6,10,28,.4),rgba(2,3,10,.92));
     backdrop-filter:blur(3px);transition:opacity .8s}
   .veil.gone{opacity:0;pointer-events:none}
-  .veil .pre{font-size:10px;letter-spacing:.34em;color:var(--cian);text-transform:uppercase;margin-bottom:18px}
-  .veil h1{font-family:'Fraunces';font-weight:300;font-size:clamp(28px,6vw,52px);line-height:1.05;max-width:760px;margin-bottom:20px}
+  .veil .pre{font-size:13px;letter-spacing:.34em;color:var(--cian);text-transform:uppercase;margin-bottom:18px}
+  .veil h1{font-family:'Fraunces';font-weight:300;font-size:clamp(32px,8vw,56px);line-height:1.05;max-width:760px;margin-bottom:20px}
   .veil h1 i{font-style:italic;color:var(--cian-glow)}
-  .veil p{max-width:480px;font-size:13px;line-height:1.7;color:var(--ink-dim);margin-bottom:28px}
-  .veil .note{font-size:10px;color:var(--ink-dim);margin-top:20px;letter-spacing:.05em;opacity:.7}
+  .veil p{max-width:480px;font-size:16px;line-height:1.7;color:var(--ink-dim);margin-bottom:28px}
+  .veil .note{font-size:12px;color:var(--ink-dim);margin-top:20px;letter-spacing:.05em;opacity:.7}
   .veil .headphones{display:inline-flex;align-items:center;gap:8px;margin-bottom:22px;
-    font-size:12px;letter-spacing:.03em;color:var(--cian-glow);
+    font-size:15px;letter-spacing:.03em;color:var(--cian-glow);
     border:1px solid rgba(46,230,232,.35);border-radius:30px;padding:11px 20px;background:rgba(46,230,232,.07)}
   .bigbtn{cursor:pointer;border:none;font-family:'Space Mono';font-size:13px;letter-spacing:.2em;text-transform:uppercase;
     color:var(--void-0);background:linear-gradient(100deg,var(--cian),var(--cian-glow));padding:17px 44px;border-radius:44px;
@@ -205,10 +213,10 @@
   </div>
 
   <div class="card" id="card">
-    <span class="x" id="cardX">✕</span>
     <span class="tag" id="cardTag"></span>
     <div class="ttl" id="cardTtl"></div>
     <div class="bd" id="cardBd"></div>
+    <div class="close-bar"></div>
   </div>
 
   <div class="latent-panel" id="latentPanel">
@@ -363,7 +371,7 @@ let planets=[], stars=[], you=null;
 let farPlanet=null, farStar=null;
 let activePlanet=null, activeStar=null;
 let radiusScale=1;
-const baseR=()=>Math.min(VW,VH)*0.37*DPR;
+const baseR=()=>Math.min(VW,VH)*0.44*DPR;
 
 const PLANET_PALETTES=[
   {base:'#c97b4a',band:'#e0a86b',spot:'#8a4a28'},
@@ -388,10 +396,10 @@ function build(){
     const dist=0.22+(k/(N-1))*0.72;
     const offset=(k%2===0)?0:sector*0.5;
     const ang=k*sector+offset;
-    const size=4+Math.pow(s.infl,2)*13;
+    const size=6+Math.pow(s.infl,2)*18;
     const pal=PLANET_PALETTES[o.i%PLANET_PALETTES.length];
     return {s,songIdx:o.i,ang,dist,orbit:k,size,alive:true,born:performance.now()+k*55,
-            ox:0,oy:0,spin:(Math.random()-.5)*0.0003,
+            ox:0,oy:0,spin:(Math.random()-.5)*0.00003,
             pal,rot:Math.random()*6.28,rotSpd:0.002+Math.random()*0.004,
             tilt:(Math.random()-.5)*0.6,ring:s.infl>0.80,bands:2+Math.floor(Math.random()*2)};
   });
@@ -420,7 +428,7 @@ function relaxPlanets(){
         const ax=Math.cos(pa.ang)*R*pa.dist, ay=Math.sin(pa.ang)*R*pa.dist;
         const bx=Math.cos(pb.ang)*R*pb.dist, by=Math.sin(pb.ang)*R*pb.dist;
         const d=Math.hypot(ax-bx,ay-by)||0.001;
-        const need=(pa.size+pb.size)*DPR + 54;
+        const need=(pa.size+pb.size)*DPR + 70;
         if(d<need){
           const overlap=(need-d);
           const nx=(ax-bx)/d, ny=(ay-by)/d;
@@ -553,7 +561,7 @@ function frame(now){
   }
   ctx.globalCompositeOperation='source-over';
 
-  const gt=now*0.00004;
+  const gt=now*0.000006;
 
   /* ── BORDE DE LA GALAXIA: anillo límite que encierra lo tuyo ──
      Todo lo de adentro es "tu galaxia"; los cuerpos lejanos quedan fuera.
@@ -719,7 +727,7 @@ function drawPlanet(x,y,r,pl,lx,ly){
 function drawLabel(text,x,y,active,scale,far){
   scale=scale||1;
   ctx.save();
-  const fs=(active?14:12)*DPR*scale;
+  const fs=(active?17:15)*DPR*scale;
   ctx.font=`${fs}px 'Space Mono',monospace`;
   ctx.textAlign='center';ctx.textBaseline='top';
   const w=ctx.measureText(text).width,padX=7*DPR*scale,h=(active?18:16)*DPR*scale;
@@ -817,10 +825,19 @@ function openCard(n,x,y,far){
   document.getElementById('cardBd').innerHTML=n.bd;
   card.classList.toggle('far',!!far);
   let lx=Math.min(x+18,VW-312),ly=Math.min(y-20,VH-220);ly=Math.max(ly,20);lx=Math.max(lx,10);
+  card.classList.remove('on');
+  // fuerza reflow para reiniciar la animación de la barra
+  void card.offsetWidth;
   card.style.left=lx+'px';card.style.top=ly+'px';card.classList.add('on');
+  scheduleCardClose();
 }
-document.getElementById('cardX').onclick=()=>card.classList.remove('on');
 document.getElementById('finaleClose').onclick=()=>document.getElementById('finalePanel').classList.remove('on');
+
+let cardCloseTimer;
+function scheduleCardClose(){
+  clearTimeout(cardCloseTimer);
+  cardCloseTimer=setTimeout(()=>card.classList.remove('on'),7000);
+}
 
 /* ---- flujo de fases ---- */
 let phase='intro';
