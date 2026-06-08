@@ -45,6 +45,11 @@
   .hud{position:absolute;bottom:0;left:0;right:0;z-index:12;padding:0 20px 24px}
   .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:8px}
   .hud .reads{font-family:'Fraunces';font-size:17px;line-height:1.45;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 80px)}
+  .hud .reads b{font-weight:400;font-style:italic}
+  .hud .reads .song{color:var(--estrella)}
+  .hud .reads .artist{color:var(--cian-glow)}
+  .hud .reads .profile{color:var(--azul-soft)}
+  .hud .reads .far{color:var(--far-glow)}
 
   /* info-card: reemplaza el .card flotante, vive dentro del HUD */
   .info-card{display:none;margin-bottom:10px;padding:14px 16px 12px;
@@ -817,29 +822,30 @@ cv.addEventListener('click',e=>{
   if(phase==='explore'){
     if(h.type==='you'){
       activeStar=null;activePlanet=null;emit('highlight',{kind:'you'});
-      read(`Perfil #001F56 — eres tú. El sistema te conoce como fan n°1 de ${TOP_ARTIST} y como oyente nocturno soñador.`);
+      read(`<b class="profile">Perfil #001F56 — eres tú.</b> El sistema te conoce como fan n°1 de <b class="artist">${TOP_ARTIST}</b> y como oyente nocturno soñador.`);
       exploredYou=true;maybeReveal();
     }
     if(h.type==='star'){
       activeStar=h.obj;activePlanet=null;emit('highlight',{kind:'star',idx:h.obj.idx-1});
       const n=h.obj.n;
-      read(`${n.ttl}. ${n.bd.replace(/<[^>]+>/g,'')}`);
+      const body=n.bd.replace(/<b>/g,'<b class="artist">').replace(/<\/b>/g,'</b>');
+      read(`<b class="profile">${n.ttl}.</b> ${body}`);
       exploredStars.add(h.obj.idx);maybeReveal();
     }
     if(h.type==='planet'){
       activePlanet=h.obj;activeStar=null;emit('highlight',{kind:'planet',idx:h.obj.songIdx});
       setNowPlaying(h.obj.s);
       exploredPlanets.add(h.obj.songIdx);
-      read(`"${h.obj.s.t}" — ${h.obj.s.a}. Su tamaño depende de contratos con disqueras o popularidad: mientras más popular, más grande y con más probabilidad de recomendación.`);maybeReveal();
+      read(`<b class="song">"${h.obj.s.t}"</b> — <b class="artist">${h.obj.s.a}</b>. Su tamaño depende de contratos con disqueras o popularidad: mientras más popular, más grande y con más probabilidad de recomendación.`);maybeReveal();
     }
     if(h.type==='farplanet'){
       activePlanet=h.obj;activeStar=null;
-      read(`"${FAR_SONG.t}" — existe, pero el sistema jamás te la mostrará. Está demasiado lejos de tu perfil: para el algoritmo, no existe para ti.`);
+      read(`<b class="far">"${FAR_SONG.t}"</b> — existe, pero el sistema jamás te la mostrará. Está demasiado lejos de tu perfil: para el algoritmo, no existe para ti.`);
       exploredFarPlanet=true;maybeReveal();
     }
     if(h.type==='farstar'){
       activeStar=h.obj;activePlanet=null;
-      read(`Perfil #B0309A — nunca se cruzará contigo. Este oyente escucha algo completamente distinto a ti. El sistema mide la distancia y la considera demasiado grande: jamás los va a juntar.`);
+      read(`<b class="far">Perfil #B0309A — nunca se cruzará contigo.</b> Este oyente escucha algo completamente distinto a ti. El sistema mide la distancia y la considera demasiado grande: jamás los va a juntar.`);
       exploredFarStar=true;maybeReveal();
     }
   } else if(phase==='choose'){
@@ -848,29 +854,7 @@ cv.addEventListener('click',e=>{
   // en fase quiz/done no procesar toques al canvas (el quiz tiene sus propios botones)
 });
 
-function openCard(n,x,y,far){
-  const ic=document.getElementById('infoCard');
-  document.getElementById('infoTag').textContent=n.tag;
-  document.getElementById('infoTag').style.background=rgba(n.glow,.16);
-  document.getElementById('infoTag').style.color=n.glow;
-  document.getElementById('infoTtl').textContent=n.ttl;
-  document.getElementById('infoBd').innerHTML=n.bd;
-  ic.classList.toggle('far',!!far);
-  ic.classList.remove('on');
-  void ic.offsetWidth;
-  ic.classList.add('on');
-  scheduleCardClose();
-}
 document.getElementById('finaleClose').onclick=()=>document.getElementById('finalePanel').classList.remove('on');
-
-let cardCloseTimer;
-function scheduleCardClose(){
-  clearTimeout(cardCloseTimer);
-  cardCloseTimer=setTimeout(()=>{
-    const ic=document.getElementById('infoCard');
-    if(ic) ic.classList.remove('on');
-  },7000);
-}
 
 /* ---- flujo de fases ---- */
 let phase='intro';
@@ -881,7 +865,7 @@ const counter=document.getElementById('counterBox');
 const cta=document.getElementById('cta');
 const latentPanel=document.getElementById('latentPanel');
 let readTimer;
-function read(txt){reads.style.opacity=0;clearTimeout(readTimer);readTimer=setTimeout(()=>{reads.textContent=txt;reads.style.opacity=1;},260);}
+function read(txt){reads.style.opacity=0;clearTimeout(readTimer);readTimer=setTimeout(()=>{reads.innerHTML=txt;reads.style.opacity=1;},260);}
 function setCount(){document.getElementById('cnum').textContent=planets.filter(p=>p.alive).length;}
 function showHintTop(t){hintTop.textContent=t;hintTop.classList.add('on');}
 function hideHintTop(){hintTop.classList.remove('on');}
@@ -901,10 +885,8 @@ function maybeReveal(){
      && exploredFarPlanet && exploredFarStar && phase==='explore'){
     phase='latent';
     hideHintTop();
-    setTimeout(()=>{
-      document.getElementById('infoCard').classList.remove('on');
-      setTimeout(()=>{ latentPanel.classList.add('on'); },1800);
-    },2500);
+    read('Exploraste toda tu galaxia. Ahora veamos cómo se construyó.');
+    setTimeout(()=>{ latentPanel.classList.add('on'); },1400);
   }
 }
 
@@ -1066,7 +1048,6 @@ function finish(){
   radiusScale=1;planets.forEach((p,i)=>{p.alive=true;p.born=performance.now()+i*40;});setCount();
   emit('rebirth');pushState();
   document.getElementById('phaseTag').textContent='→ Parte 2 · Especulación';
-  document.getElementById('infoCard').classList.remove('on');
   setTimeout(()=>{
     document.getElementById('finalePanel').classList.add('on');
   },700);
