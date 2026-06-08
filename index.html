@@ -139,7 +139,7 @@
   .quiz button.like:hover{border-color:var(--cian-glow);background:rgba(46,230,232,.12);color:var(--cian-glow)}
   .quiz button.skip:hover{border-color:var(--danger);background:rgba(255,93,115,.1);color:var(--danger)}
 
-  .why-top{position:absolute;z-index:35;bottom:165px;left:50%;transform:translateX(-50%);
+  .why-top{position:absolute;z-index:35;top:88px;left:50%;transform:translateX(-50%);
     width:min(360px,90%);opacity:0;pointer-events:none;transition:opacity .45s;text-align:center}
   .why-top.on{opacity:1;pointer-events:auto}
   .why-top .pill{cursor:pointer;display:inline-flex;align-items:center;gap:8px;
@@ -239,14 +239,7 @@
   <!-- Panel de información unificado: canciones Y perfiles van aquí -->
   <div class="ui hud" id="hudPanel">
     <div class="phase" id="phaseTag">Fase 01 · Exploración</div>
-    <!-- info de tarjeta (perfil/canción lejana): aparece sobre el reads -->
-    <div class="info-card" id="infoCard">
-      <span class="info-tag" id="infoTag"></span>
-      <div class="info-ttl" id="infoTtl"></div>
-      <div class="info-bd" id="infoBd"></div>
-      <div class="info-bar"></div>
-    </div>
-    <div class="reads" id="reads"></div>
+<div class="reads" id="reads"></div>
   </div>
 
   <div class="latent-panel" id="latentPanel">
@@ -824,11 +817,14 @@ cv.addEventListener('click',e=>{
   if(phase==='explore'){
     if(h.type==='you'){
       activeStar=null;activePlanet=null;emit('highlight',{kind:'you'});
-      openCard(NEIGHBORS[0],lx,ly,false);read(`Esta estrella representa tu perfil musical. Toca las demás estrellas: son tus vecinos oyentes.`);exploredYou=true;maybeReveal();
+      read(`Perfil #001F56 — eres tú. El sistema te conoce como fan n°1 de ${TOP_ARTIST} y como oyente nocturno soñador.`);
+      exploredYou=true;maybeReveal();
     }
     if(h.type==='star'){
       activeStar=h.obj;activePlanet=null;emit('highlight',{kind:'star',idx:h.obj.idx-1});
-      openCard(h.obj.n,lx,ly,false);exploredStars.add(h.obj.idx);maybeReveal();
+      const n=h.obj.n;
+      read(`${n.ttl}. ${n.bd.replace(/<[^>]+>/g,'')}`);
+      exploredStars.add(h.obj.idx);maybeReveal();
     }
     if(h.type==='planet'){
       activePlanet=h.obj;activeStar=null;emit('highlight',{kind:'planet',idx:h.obj.songIdx});
@@ -838,15 +834,12 @@ cv.addEventListener('click',e=>{
     }
     if(h.type==='farplanet'){
       activePlanet=h.obj;activeStar=null;
-      openCard({tag:"Canción lejana",glow:"#e88ad8",
-        ttl:`"${FAR_SONG.t}" — fuera de tu galaxia`,
-        bd:`Esta canción <b>existe</b>, pero el sistema <b>jamás te la mostrará</b>. Está demasiado lejos de tu perfil: para el algoritmo, no existe para ti. Nunca llegará a tus recomendaciones.`},lx,ly,true);
-      read(`"${FAR_SONG.t}" — una canción que el sistema nunca te va a recomendar.`);
+      read(`"${FAR_SONG.t}" — existe, pero el sistema jamás te la mostrará. Está demasiado lejos de tu perfil: para el algoritmo, no existe para ti.`);
       exploredFarPlanet=true;maybeReveal();
     }
     if(h.type==='farstar'){
       activeStar=h.obj;activePlanet=null;
-      openCard(FAR_NEIGHBOR,lx,ly,true);
+      read(`Perfil #B0309A — nunca se cruzará contigo. Este oyente escucha algo completamente distinto a ti. El sistema mide la distancia y la considera demasiado grande: jamás los va a juntar.`);
       exploredFarStar=true;maybeReveal();
     }
   } else if(phase==='choose'){
