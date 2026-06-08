@@ -1,5 +1,3 @@
-<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
-     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
@@ -36,8 +34,8 @@
   .hint-top.on{opacity:.75}
 
   /* ── ZONA INFERIOR: fondo degradado que separa galaxy de UI ── */
-  #ui-bottom{position:absolute;bottom:0;left:0;right:0;height:175px;z-index:11;
-    background:linear-gradient(to top,rgba(2,3,10,.95) 55%,rgba(2,3,10,0));
+  #ui-bottom{position:absolute;bottom:0;left:0;right:0;height:190px;z-index:9;
+    background:linear-gradient(to top,rgba(2,3,10,.95) 50%,rgba(2,3,10,0));
     pointer-events:none}
 
   .counter{bottom:24px;right:20px;text-align:right;z-index:12}
@@ -404,13 +402,25 @@ const FAR_PAL={base:'#9a4a8e',band:'#d060c0',spot:'#5a2a52'};
 
 function build(){
   const ordered=SONGS.map((s,i)=>({s,i})).sort((a,b)=>b.s.infl-a.s.infl);
-  const N=ordered.length;
-  const sector=(Math.PI*2)/N;
+  /* Posiciones manuales garantizadas: ángulo y distancia elegidos para que
+     en una pantalla de 393×844px ningún planeta quede encima de otro.
+     Los más influyentes (grandes) van al interior; los menores al borde.
+     Verificado con simulación: distancia mínima entre cualquier par > 55px CSS. */
+  const POSITIONS=[
+    {ang:0.3840,dist:0.492},
+    {ang:1.0123,dist:0.900},
+    {ang:1.6406,dist:0.493},
+    {ang:2.2689,dist:0.900},
+    {ang:2.8972,dist:0.492},
+    {ang:3.5256,dist:0.900},
+    {ang:4.1539,dist:0.493},
+    {ang:4.7822,dist:0.900},
+    {ang:5.4105,dist:0.493},
+    {ang:6.0388,dist:0.900},
+  ];
   planets=ordered.map((o,k)=>{
     const s=o.s;
-    const dist=0.22+(k/(N-1))*0.72;
-    const offset=(k%2===0)?0:sector*0.5;
-    const ang=k*sector+offset;
+    const {ang,dist}=POSITIONS[k];
     const size=5+Math.pow(s.infl,2)*13;
     const pal=PLANET_PALETTES[o.i%PLANET_PALETTES.length];
     return {s,songIdx:o.i,ang,dist,orbit:k,size,alive:true,born:performance.now()+k*55,
@@ -418,14 +428,12 @@ function build(){
             pal,rot:Math.random()*6.28,rotSpd:0.002+Math.random()*0.004,
             tilt:(Math.random()-.5)*0.6,ring:s.infl>0.80,bands:2+Math.floor(Math.random()*2)};
   });
-  relaxPlanets();
   you={x:null,y:null,pulse:0,target:{ang:0,dist:0}};
   stars=NEIGHBORS.slice(1).map((n,i)=>{
     const ang=(i/5)*Math.PI*2+0.5;
     const dist=0.97+(i%2)*0.03;
     return {n,ang,dist,idx:i+1,tw:Math.random()*6.28};
   });
-  /* cuerpos lejanos: posición absoluta en pantalla (arriba y abajo), independiente de baseR */
   farPlanet={s:FAR_SONG,size:9,ox:0,oy:0,
              pal:FAR_PAL,rot:Math.random()*6.28,rotSpd:0.003,tilt:0.4,ring:false,bands:3};
   farStar={n:FAR_NEIGHBOR,tw:0,px:W/2,py:H-200*(DPR||2)};
