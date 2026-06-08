@@ -1,3 +1,5 @@
+<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
+     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
@@ -22,29 +24,40 @@
   .logo-corner{top:20px;right:22px;width:64px;height:64px;z-index:15}
   .logo-corner img{width:100%;height:100%;object-fit:contain;opacity:.95}
 
-  .brand{top:22px;left:24px;}
-  .brand .k{font-family:'Space Mono';font-size:13px;letter-spacing:.26em;color:var(--cian);text-transform:uppercase}
-  .brand .t{font-family:'Fraunces';font-weight:300;font-style:italic;font-size:29px;color:var(--ink);margin-top:4px;letter-spacing:.01em}
+  /* ── ZONA SUPERIOR: brand compacto ── */
+  .brand{top:16px;left:20px;}
+  .brand .k{font-family:'Space Mono';font-size:11px;letter-spacing:.26em;color:var(--cian);text-transform:uppercase}
+  .brand .t{font-family:'Fraunces';font-weight:300;font-style:italic;font-size:26px;color:var(--ink);margin-top:2px;letter-spacing:.01em}
 
-  .hint-top{position:absolute;z-index:25;top:96px;left:50%;transform:translateX(-50%);
-    font-size:15px;letter-spacing:.10em;color:var(--ink-dim);text-transform:uppercase;
+  .hint-top{position:absolute;z-index:25;top:88px;left:50%;transform:translateX(-50%);
+    font-size:13px;letter-spacing:.10em;color:var(--ink-dim);text-transform:uppercase;
     opacity:0;transition:opacity .6s;text-align:center;white-space:normal;
-    width:min(320px,82%);line-height:1.6;pointer-events:none}
+    width:min(300px,82%);line-height:1.6;pointer-events:none}
   .hint-top.on{opacity:.75}
 
-  .counter{bottom:28px;right:24px;text-align:right;z-index:12}
-  .counter .num{font-family:'Fraunces';font-size:38px;font-weight:300;color:var(--estrella);line-height:1}
-  .counter .lab{font-size:12px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase;margin-top:4px}
+  /* ── ZONA INFERIOR: fondo degradado que separa galaxy de UI ── */
+  #ui-bottom{position:absolute;bottom:0;left:0;right:0;height:175px;z-index:11;
+    background:linear-gradient(to top,rgba(2,3,10,.95) 55%,rgba(2,3,10,0));
+    pointer-events:none}
 
-  .hud{bottom:24px;left:24px;max-width:230px}
-  .hud .phase{font-size:13px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:7px}
-  .hud .reads{font-family:'Fraunces';font-size:19px;line-height:1.5;color:var(--ink);min-height:44px;transition:opacity .5s}
+  .counter{bottom:24px;right:20px;text-align:right;z-index:12}
+  .counter .num{font-family:'Fraunces';font-size:34px;font-weight:300;color:var(--estrella);line-height:1}
+  .counter .lab{font-size:11px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase;margin-top:3px}
 
-  .card{position:absolute;z-index:20;width:min(296px,82%);background:linear-gradient(160deg,rgba(10,18,48,.96),rgba(6,10,28,.97));
-    border:1px solid rgba(46,230,232,.22);border-radius:14px;padding:20px 20px 18px;
-    backdrop-filter:blur(14px);box-shadow:0 24px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.03) inset;
-    opacity:0;transform:translateY(8px) scale(.98);pointer-events:none;transition:opacity .28s,transform .28s}
-  .card.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+  .hud{bottom:22px;left:20px;max-width:calc(100% - 100px)}
+  .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:5px}
+  .hud .reads{font-family:'Fraunces';font-size:17px;line-height:1.45;color:var(--ink);min-height:38px;transition:opacity .5s}
+
+  .card{position:absolute;z-index:20;
+    /* en celular: ancho casi completo, anclada abajo centrada */
+    width:calc(100% - 32px);max-width:460px;
+    left:50%;transform:translateX(-50%) translateY(8px) scale(.98);
+    bottom:185px;top:auto;
+    background:linear-gradient(160deg,rgba(10,18,48,.97),rgba(6,10,28,.98));
+    border:1px solid rgba(46,230,232,.22);border-radius:18px;padding:20px 22px 18px;
+    backdrop-filter:blur(18px);box-shadow:0 24px 70px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03) inset;
+    opacity:0;pointer-events:none;transition:opacity .28s,transform .28s}
+  .card.on{opacity:1;transform:translateX(-50%) translateY(0) scale(1);pointer-events:auto}
   .card.far{border-color:rgba(208,96,192,.4)}
   .card .tag{display:inline-block;font-size:12px;letter-spacing:.2em;padding:4px 9px;border-radius:20px;text-transform:uppercase;margin-bottom:11px}
   .card .ttl{font-family:'Fraunces';font-size:22px;font-weight:400;line-height:1.25;margin-bottom:8px}
@@ -207,6 +220,8 @@
     <div class="lab">en órbita</div>
   </div>
 
+  <div id="ui-bottom"></div>
+
   <div class="ui hud">
     <div class="phase" id="phaseTag">Fase 01 · Exploración</div>
     <div class="reads" id="reads"></div>
@@ -366,12 +381,12 @@ function whyText(state){
 }
 
 /* ---- modelo ---- */
-const cx=()=>W/2, cy=()=>H*0.45;
+const cx=()=>W/2, cy=()=>H*0.42;
 let planets=[], stars=[], you=null;
 let farPlanet=null, farStar=null;
 let activePlanet=null, activeStar=null;
 let radiusScale=1;
-const baseR=()=>Math.min(VW,VH)*0.37*DPR;
+const baseR=()=>Math.min(VW,VH)*0.34*DPR;
 
 const PLANET_PALETTES=[
   {base:'#c97b4a',band:'#e0a86b',spot:'#8a4a28'},
@@ -396,10 +411,10 @@ function build(){
     const dist=0.22+(k/(N-1))*0.72;
     const offset=(k%2===0)?0:sector*0.5;
     const ang=k*sector+offset;
-    const size=9+Math.pow(s.infl,2)*24;
+    const size=5+Math.pow(s.infl,2)*13;
     const pal=PLANET_PALETTES[o.i%PLANET_PALETTES.length];
     return {s,songIdx:o.i,ang,dist,orbit:k,size,alive:true,born:performance.now()+k*55,
-            ox:0,oy:0,spin:(Math.random()-.5)*0.00003,
+            ox:0,oy:0,spin:(Math.random()-.5)*0.00018,
             pal,rot:Math.random()*6.28,rotSpd:0.002+Math.random()*0.004,
             tilt:(Math.random()-.5)*0.6,ring:s.infl>0.80,bands:2+Math.floor(Math.random()*2)};
   });
@@ -413,7 +428,7 @@ function build(){
   /* cuerpos lejanos: posición absoluta en pantalla (arriba y abajo), independiente de baseR */
   farPlanet={s:FAR_SONG,size:9,ox:0,oy:0,
              pal:FAR_PAL,rot:Math.random()*6.28,rotSpd:0.003,tilt:0.4,ring:false,bands:3};
-  farStar={n:FAR_NEIGHBOR,tw:0,px:W/2,py:H-150*(DPR||2)};
+  farStar={n:FAR_NEIGHBOR,tw:0,px:W/2,py:H-200*(DPR||2)};
 }
 build();
 
@@ -429,7 +444,7 @@ function relaxPlanets(){
         const ax=Math.cos(pa.ang)*R*pa.dist, ay=Math.sin(pa.ang)*R*pa.dist;
         const bx=Math.cos(pb.ang)*R*pb.dist, by=Math.sin(pb.ang)*R*pb.dist;
         const d=Math.hypot(ax-bx,ay-by)||0.001;
-        const need=(pa.size+pb.size)*DPR + 70;
+        const need=(pa.size+pb.size)*DPR + 48;
         if(d<need){
           const overlap=(need-d);
           const nx=(ax-bx)/d, ny=(ay-by)/d;
@@ -461,7 +476,7 @@ function placeFarAbs(isTop, time){
   const fx=cx() + Math.sin(t*0.00028+1.2)*18*DPR;
   const fy=isTop
     ? 78*DPR + Math.sin(t*0.00022)*10*DPR
-    : H - 150*DPR + Math.sin(t*0.00019+2.1)*10*DPR;
+    : H - 200*DPR + Math.sin(t*0.00019+2.1)*10*DPR;
   return {x:fx, y:fy};
 }
 
@@ -564,7 +579,7 @@ function frame(now){
   }
   ctx.globalCompositeOperation='source-over';
 
-  const gt=now*0.000006;
+  const gt=now*0.000022;
 
   /* ── BORDE DE LA GALAXIA ── */
   const edgeR=baseR()*radiusScale*1.12;
@@ -821,11 +836,9 @@ function openCard(n,x,y,far){
   document.getElementById('cardTtl').textContent=n.ttl;
   document.getElementById('cardBd').innerHTML=n.bd;
   card.classList.toggle('far',!!far);
-  let lx=Math.min(x+18,VW-312),ly=Math.min(y-20,VH-220);ly=Math.max(ly,20);lx=Math.max(lx,10);
   card.classList.remove('on');
-  // fuerza reflow para reiniciar la animación de la barra
   void card.offsetWidth;
-  card.style.left=lx+'px';card.style.top=ly+'px';card.classList.add('on');
+  card.classList.add('on');
   scheduleCardClose();
 }
 document.getElementById('finaleClose').onclick=()=>document.getElementById('finalePanel').classList.remove('on');
