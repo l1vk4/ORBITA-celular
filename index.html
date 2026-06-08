@@ -366,12 +366,12 @@ function whyText(state){
 }
 
 /* ---- modelo ---- */
-const cx=()=>W/2, cy=()=>H/2;
+const cx=()=>W/2, cy=()=>H*0.45;
 let planets=[], stars=[], you=null;
 let farPlanet=null, farStar=null;
 let activePlanet=null, activeStar=null;
 let radiusScale=1;
-const baseR=()=>Math.min(VW,VH)*0.42*DPR;
+const baseR=()=>Math.min(VW,VH)*0.37*DPR;
 
 const PLANET_PALETTES=[
   {base:'#c97b4a',band:'#e0a86b',spot:'#8a4a28'},
@@ -426,8 +426,8 @@ function relaxPlanets(){
       for(let b=a+1;b<planets.length;b++){
         const pa=planets[a], pb=planets[b];
         // posiciones elípticas reales (con estiramiento vertical)
-        const ax=Math.cos(pa.ang)*R*pa.dist, ay=Math.sin(pa.ang)*R*pa.dist*STRETCH_Y;
-        const bx=Math.cos(pb.ang)*R*pb.dist, by=Math.sin(pb.ang)*R*pb.dist*STRETCH_Y;
+        const ax=Math.cos(pa.ang)*R*pa.dist, ay=Math.sin(pa.ang)*R*pa.dist;
+        const bx=Math.cos(pb.ang)*R*pb.dist, by=Math.sin(pb.ang)*R*pb.dist;
         const d=Math.hypot(ax-bx,ay-by)||0.001;
         const need=(pa.size+pb.size)*DPR + 70;
         if(d<need){
@@ -448,10 +448,9 @@ function relaxPlanets(){
 
 /* La galaxia es elíptica: más alta que ancha, para llenar la pantalla vertical del celular.
    El radio horizontal lo limita el ancho; el vertical se estira con STRETCH_Y. */
-const STRETCH_Y=1.35;
 function place(ang,dist){
   const r=baseR()*radiusScale*dist;
-  return {x:cx()+Math.cos(ang)*r, y:cy()+Math.sin(ang)*r*STRETCH_Y};
+  return {x:cx()+Math.cos(ang)*r, y:cy()+Math.sin(ang)*r};
 }
 /* posición de cuerpos lejanos: NO se achican con radiusScale */
 /* posición absoluta en pantalla para cuerpos lejanos */
@@ -567,40 +566,35 @@ function frame(now){
 
   const gt=now*0.000006;
 
-  /* ── BORDE DE LA GALAXIA: anillo límite elíptico que encierra lo tuyo ── */
+  /* ── BORDE DE LA GALAXIA ── */
   const edgeR=baseR()*radiusScale*1.12;
-  const edgeRY=edgeR*STRETCH_Y;
-  // halo interior: niebla galáctica que se desvanece hacia el borde
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  ctx.translate(cx(),cy());ctx.scale(1,STRETCH_Y);
-  const halo=ctx.createRadialGradient(0,0,edgeR*0.5,0,0,edgeR*1.18);
+  const halo=ctx.createRadialGradient(cx(),cy(),edgeR*0.5,cx(),cy(),edgeR*1.18);
   halo.addColorStop(0,'rgba(46,230,232,0)');
   halo.addColorStop(0.82,'rgba(46,230,232,0)');
   halo.addColorStop(0.92,'rgba(46,230,232,.05)');
   halo.addColorStop(1,'rgba(46,230,232,0)');
-  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(0,0,edgeR*1.18,0,6.28);ctx.fill();ctx.restore();
-  // anillo límite punteado, luminoso y latiente
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx(),cy(),edgeR*1.18,0,6.28);ctx.fill();ctx.restore();
   ctx.save();
   const pulse=0.5+0.5*Math.sin(now*0.0014);
   ctx.setLineDash([1.5*DPR,7*DPR]);
   ctx.strokeStyle=`rgba(46,230,232,${0.20+pulse*0.18})`;
   ctx.lineWidth=1.4*DPR;
-  ctx.beginPath();ctx.ellipse(cx(),cy(),edgeR,edgeRY,0,0,6.28);ctx.stroke();
-  // segundo anillo más tenue justo afuera
+  ctx.beginPath();ctx.arc(cx(),cy(),edgeR,0,6.28);ctx.stroke();
   ctx.setLineDash([1*DPR,10*DPR]);
   ctx.strokeStyle='rgba(46,230,232,.10)';
   ctx.lineWidth=1*DPR;
-  ctx.beginPath();ctx.ellipse(cx(),cy(),edgeR*1.05,edgeRY*1.05,0,0,6.28);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx(),cy(),edgeR*1.05,0,6.28);ctx.stroke();
   ctx.restore();
 
-  /* órbitas elípticas */
+  /* órbitas */
   ctx.save();ctx.setLineDash([2*DPR,5*DPR]);
   for(const pl of planets){
     if(!pl.alive)continue;
     const rr=baseR()*radiusScale*pl.dist;
     ctx.strokeStyle=(pl===activePlanet)?'rgba(46,230,232,.5)':'rgba(120,150,220,.13)';
     ctx.lineWidth=(pl===activePlanet?1.4:1)*DPR;
-    ctx.beginPath();ctx.ellipse(cx(),cy(),rr,rr*STRETCH_Y,0,0,6.28);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx(),cy(),rr,0,6.28);ctx.stroke();
   }
   ctx.restore();
 
