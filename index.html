@@ -1,5 +1,3 @@
-<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
-     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Space+Mono:wght@400;700&display=swap');
   :root{
@@ -15,18 +13,12 @@
   body{display:flex;align-items:center;justify-content:center}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,rgba(0,151,152,.06),transparent 60%),#05060d;z-index:-1}
   #app{position:relative;width:100%;height:100%;overflow:hidden}
-  @media (min-width:760px){
-    #app{width:390px;height:min(844px,94vh);border-radius:44px;
-      box-shadow:0 0 0 12px #0b0d16,0 0 0 14px #1a1d2e,0 40px 120px rgba(0,0,0,.8),0 0 80px rgba(0,151,152,.12);overflow:hidden}
-    #app::after{content:'';position:absolute;top:11px;left:50%;transform:translateX(-50%);
-      width:120px;height:26px;background:#0b0d16;border-radius:0 0 18px 18px;z-index:60;pointer-events:none}
-  }
   canvas{position:absolute;inset:0;display:block}
   .ui{position:absolute;z-index:10;pointer-events:none}
   .ui *{pointer-events:auto}
 
-  .logo-corner{top:18px;right:20px;width:48px;height:48px;z-index:15}
-  .logo-corner img{width:100%;height:100%;object-fit:contain;opacity:.9}
+  .logo-corner{top:20px;right:22px;width:64px;height:64px;z-index:15}
+  .logo-corner img{width:100%;height:100%;object-fit:contain;opacity:.95}
 
   .brand{top:22px;left:26px;}
   .brand .k{font-family:'Space Mono';font-size:10px;letter-spacing:.32em;color:var(--cian);text-transform:uppercase}
