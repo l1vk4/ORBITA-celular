@@ -42,9 +42,25 @@
   .counter .num{font-family:'Fraunces';font-size:34px;font-weight:300;color:var(--estrella);line-height:1}
   .counter .lab{font-size:11px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase;margin-top:3px}
 
-  .hud{bottom:22px;left:20px;max-width:calc(100% - 100px)}
-  .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:5px}
-  .hud .reads{font-family:'Fraunces';font-size:17px;line-height:1.45;color:var(--ink);min-height:38px;transition:opacity .5s}
+  .hud{position:absolute;bottom:0;left:0;right:0;z-index:12;padding:0 20px 24px}
+  .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:8px}
+  .hud .reads{font-family:'Fraunces';font-size:17px;line-height:1.45;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 80px)}
+
+  /* info-card: reemplaza el .card flotante, vive dentro del HUD */
+  .info-card{display:none;margin-bottom:10px;padding:14px 16px 12px;
+    background:linear-gradient(160deg,rgba(10,18,48,.96),rgba(6,10,28,.97));
+    border:1px solid rgba(46,230,232,.22);border-radius:14px;position:relative;overflow:hidden}
+  .info-card.on{display:block}
+  .info-card.far{border-color:rgba(208,96,192,.4)}
+  .info-tag{display:inline-block;font-size:10px;letter-spacing:.2em;padding:3px 8px;border-radius:20px;
+    text-transform:uppercase;margin-bottom:8px}
+  .info-ttl{font-family:'Fraunces';font-size:18px;font-weight:400;line-height:1.2;margin-bottom:6px;color:var(--ink)}
+  .info-bd{font-size:13px;line-height:1.55;color:var(--ink-dim)}
+  .info-bd b{color:var(--cian-glow);font-weight:400}
+  .info-card.far .info-bd b{color:var(--far-glow)}
+  .info-bar{position:absolute;bottom:0;left:0;height:2px;width:100%;transform-origin:left;background:rgba(46,230,232,.5)}
+  .info-card.on .info-bar{animation:shrinkBar 7s linear forwards}
+  @keyframes shrinkBar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 
   .card{position:absolute;z-index:20;
     /* en celular: ancho casi completo, anclada abajo centrada */
@@ -123,8 +139,8 @@
   .quiz button.like:hover{border-color:var(--cian-glow);background:rgba(46,230,232,.12);color:var(--cian-glow)}
   .quiz button.skip:hover{border-color:var(--danger);background:rgba(255,93,115,.1);color:var(--danger)}
 
-  .why-top{position:absolute;z-index:35;top:88px;left:50%;transform:translateX(-50%);
-    width:min(360px,88%);opacity:0;pointer-events:none;transition:opacity .45s;text-align:center}
+  .why-top{position:absolute;z-index:35;bottom:165px;left:50%;transform:translateX(-50%);
+    width:min(360px,90%);opacity:0;pointer-events:none;transition:opacity .45s;text-align:center}
   .why-top.on{opacity:1;pointer-events:auto}
   .why-top .pill{cursor:pointer;display:inline-flex;align-items:center;gap:8px;
     font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);
@@ -141,7 +157,7 @@
   .why-top .exp .lbl{font-size:11px;letter-spacing:.24em;color:var(--warm);text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
 
   .cont-btn{position:absolute;z-index:42;left:50%;transform:translateX(-50%);
-    bottom:100px;
+    bottom:175px;
     display:none;cursor:pointer;border:none;
     font-family:'Space Mono';font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--void-0);
     background:linear-gradient(100deg,var(--cian),var(--cian-glow));padding:13px 30px;border-radius:30px;
@@ -220,16 +236,17 @@
 
   <div id="ui-bottom"></div>
 
-  <div class="ui hud">
+  <!-- Panel de información unificado: canciones Y perfiles van aquí -->
+  <div class="ui hud" id="hudPanel">
     <div class="phase" id="phaseTag">Fase 01 · Exploración</div>
+    <!-- info de tarjeta (perfil/canción lejana): aparece sobre el reads -->
+    <div class="info-card" id="infoCard">
+      <span class="info-tag" id="infoTag"></span>
+      <div class="info-ttl" id="infoTtl"></div>
+      <div class="info-bd" id="infoBd"></div>
+      <div class="info-bar"></div>
+    </div>
     <div class="reads" id="reads"></div>
-  </div>
-
-  <div class="card" id="card">
-    <span class="tag" id="cardTag"></span>
-    <div class="ttl" id="cardTtl"></div>
-    <div class="bd" id="cardBd"></div>
-    <div class="close-bar"></div>
   </div>
 
   <div class="latent-panel" id="latentPanel">
@@ -835,18 +852,20 @@ cv.addEventListener('click',e=>{
   } else if(phase==='choose'){
     if(h.type==='planet')chooseSafe(h.obj);
   }
+  // en fase quiz/done no procesar toques al canvas (el quiz tiene sus propios botones)
 });
 
 function openCard(n,x,y,far){
-  document.getElementById('cardTag').textContent=n.tag;
-  document.getElementById('cardTag').style.background=rgba(n.glow,.16);
-  document.getElementById('cardTag').style.color=n.glow;
-  document.getElementById('cardTtl').textContent=n.ttl;
-  document.getElementById('cardBd').innerHTML=n.bd;
-  card.classList.toggle('far',!!far);
-  card.classList.remove('on');
-  void card.offsetWidth;
-  card.classList.add('on');
+  const ic=document.getElementById('infoCard');
+  document.getElementById('infoTag').textContent=n.tag;
+  document.getElementById('infoTag').style.background=rgba(n.glow,.16);
+  document.getElementById('infoTag').style.color=n.glow;
+  document.getElementById('infoTtl').textContent=n.ttl;
+  document.getElementById('infoBd').innerHTML=n.bd;
+  ic.classList.toggle('far',!!far);
+  ic.classList.remove('on');
+  void ic.offsetWidth;
+  ic.classList.add('on');
   scheduleCardClose();
 }
 document.getElementById('finaleClose').onclick=()=>document.getElementById('finalePanel').classList.remove('on');
@@ -854,13 +873,15 @@ document.getElementById('finaleClose').onclick=()=>document.getElementById('fina
 let cardCloseTimer;
 function scheduleCardClose(){
   clearTimeout(cardCloseTimer);
-  cardCloseTimer=setTimeout(()=>card.classList.remove('on'),7000);
+  cardCloseTimer=setTimeout(()=>{
+    const ic=document.getElementById('infoCard');
+    if(ic) ic.classList.remove('on');
+  },7000);
 }
 
 /* ---- flujo de fases ---- */
 let phase='intro';
 const reads=document.getElementById('reads');
-const card=document.getElementById('card');
 const hintTop=document.getElementById('hintTop');
 const hintBottom=document.getElementById('hintBottom');
 const counter=document.getElementById('counterBox');
@@ -888,7 +909,7 @@ function maybeReveal(){
     phase='latent';
     hideHintTop();
     setTimeout(()=>{
-      card.classList.remove('on');
+      document.getElementById('infoCard').classList.remove('on');
       setTimeout(()=>{ latentPanel.classList.add('on'); },1800);
     },2500);
   }
@@ -1052,7 +1073,7 @@ function finish(){
   radiusScale=1;planets.forEach((p,i)=>{p.alive=true;p.born=performance.now()+i*40;});setCount();
   emit('rebirth');pushState();
   document.getElementById('phaseTag').textContent='→ Parte 2 · Especulación';
-  card.classList.remove('on');
+  document.getElementById('infoCard').classList.remove('on');
   setTimeout(()=>{
     document.getElementById('finalePanel').classList.add('on');
   },700);
