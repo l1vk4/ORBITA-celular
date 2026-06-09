@@ -38,18 +38,27 @@
     background:linear-gradient(to top,rgba(2,3,10,.95) 50%,rgba(2,3,10,0));
     pointer-events:none}
 
-  .counter{bottom:24px;right:20px;text-align:right;z-index:12}
-  .counter .num{font-family:'Fraunces';font-size:34px;font-weight:300;color:var(--estrella);line-height:1}
-  .counter .lab{font-size:11px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase;margin-top:3px}
-
   .hud{position:absolute;bottom:0;left:0;right:0;z-index:12;padding:0 20px 24px}
   .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:8px}
-  .hud .reads{font-family:'Fraunces';font-size:16px;line-height:1.5;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 70px)}
+  .hud .reads{font-family:'Fraunces';font-size:16px;line-height:1.5;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 20px)}
   .hud .reads b{font-weight:400;font-style:italic}
   .hud .reads .song{color:var(--estrella)}
   .hud .reads .artist{color:var(--cian-glow)}
   .hud .reads .profile{color:var(--azul-soft)}
   .hud .reads .far{color:var(--far-glow)}
+
+  /* reads en modo explicación del movimiento: misma gráfica que el desplegable */
+  .reads-why-wrap{display:none;margin-bottom:10px;padding:14px 16px 12px;
+    background:linear-gradient(160deg,rgba(14,10,4,.97),rgba(6,5,12,.98));
+    border:1px solid rgba(255,184,107,.22);border-radius:13px;position:relative;overflow:hidden}
+  .reads-why-wrap.on{display:block}
+  .reads-why-wrap .why-lbl{font-size:10px;letter-spacing:.24em;color:var(--warm);
+    text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
+  .reads-why-wrap .why-txt{font-family:'Fraunces';font-size:15px;line-height:1.65;color:var(--ink-dim)}
+  .reads-why-wrap .why-txt b{color:var(--warm);font-weight:400}
+  .reads-why-wrap .why-bar{position:absolute;bottom:0;left:0;height:2px;width:100%;
+    transform-origin:left;background:rgba(255,184,107,.45)}
+  .reads-why-wrap.on .why-bar{animation:shrinkBar 15s linear forwards}
 
   /* info-card: reemplaza el .card flotante, vive dentro del HUD */
   .info-card{display:none;margin-bottom:10px;padding:14px 16px 12px;
@@ -234,17 +243,17 @@
 
   <div class="hint-top" id="hintTop"></div>
 
-  <div class="ui counter" id="counterBox" style="opacity:0">
-    <div class="num" id="cnum">—</div>
-    <div class="lab">en órbita</div>
-  </div>
-
   <div id="ui-bottom"></div>
 
   <!-- Panel de información unificado: canciones Y perfiles van aquí -->
   <div class="ui hud" id="hudPanel">
     <div class="phase" id="phaseTag">Fase 01 · Exploración</div>
-<div class="reads" id="reads"></div>
+    <div class="reads-why-wrap" id="readsWhyWrap">
+      <span class="why-lbl">Explicación del movimiento</span>
+      <div class="why-txt" id="readsWhy"></div>
+      <div class="why-bar"></div>
+    </div>
+    <div class="reads" id="reads"></div>
   </div>
 
   <div class="latent-panel" id="latentPanel">
@@ -323,11 +332,11 @@ const ARTISTS=["Mac DeMarco","Tame Impala","Mitski","Frank Ocean","Rosalía","Ki
 const TOP_ARTIST=ARTISTS[0], SECOND=ARTISTS[1], THIRD=ARTISTS[2];
 const SONGS=[
   {t:"Chamber of Reflection", a:TOP_ARTIST,     infl:1.0},
-  {t:"The Less I Know the Better", a:SECOND,     infl:.88},
-  {t:"Nobody",                  a:"Mitski",       infl:.74},
-  {t:"DESPECHÁ",                a:"Rosalía",      infl:.62},
-  {t:"Space Song",              a:"Beach House",  infl:.54},
-  {t:"Pink Pony Club",          a:"Chappell Roan",infl:.44},
+  {t:"The Less I Know the Better", a:SECOND,     infl:.91},
+  {t:"Nobody",                  a:"Mitski",       infl:.78},
+  {t:"DESPECHÁ",                a:"Rosalía",      infl:.68},
+  {t:"Space Song",              a:"Beach House",  infl:.60},
+  {t:"Pink Pony Club",          a:"Chappell Roan",infl:.41},
 ];
 
 /* canción lejana: el sistema nunca se la mostrará */
@@ -873,12 +882,11 @@ let phase='intro';
 const reads=document.getElementById('reads');
 const hintTop=document.getElementById('hintTop');
 const hintBottom=document.getElementById('hintBottom');
-const counter=document.getElementById('counterBox');
 const cta=document.getElementById('cta');
 const latentPanel=document.getElementById('latentPanel');
 let readTimer;
 function read(txt){reads.style.opacity=0;clearTimeout(readTimer);readTimer=setTimeout(()=>{reads.innerHTML=txt;reads.style.opacity=1;},260);}
-function setCount(){document.getElementById('cnum').textContent=planets.filter(p=>p.alive).length;}
+function setCount(){}
 function showHintTop(t){hintTop.textContent=t;hintTop.classList.add('on');}
 function hideHintTop(){hintTop.classList.remove('on');}
 function showHintBottom(t){hintBottom.textContent=t;hintBottom.classList.add('on');}
@@ -905,7 +913,7 @@ function maybeReveal(){
 document.getElementById('enter').onclick=()=>{
   document.getElementById('intro').classList.add('gone');
   phase='explore';
-  counter.style.transition='opacity 1s';counter.style.opacity=1;setCount();
+  setCount();
   emit('connect');pushState();
   read('Conectado. Esta galaxia está viva: cada planeta es una de tus canciones.');
   // sin mensaje guía — el usuario explora libremente
@@ -1007,8 +1015,14 @@ function answer(like){
     pushState();
 
     lastState={answerMs:ms,returnedToSafe:goesToSafe,idx:qIndex,like};
-    // La explicación del movimiento ahora aparece en el HUD inferior izquierdo
-    read(whyText(lastState));
+    // Mostrar explicación con estilo gráfico warm en el HUD
+    const wrap=document.getElementById('readsWhyWrap');
+    const wtxt=document.getElementById('readsWhy');
+    read('');  // limpiar el reads normal
+    wrap.classList.remove('on');
+    void wrap.offsetWidth;  // reiniciar animación de barra
+    wtxt.innerHTML=whyText(lastState);
+    wrap.classList.add('on');
     qIndex++;
 
     pendingNext=next;
@@ -1028,6 +1042,7 @@ let pendingNext=null,pendingEnd=false;
 const contBtn=document.getElementById('cont');
 contBtn.onclick=()=>{
   contBtn.classList.remove('show');
+  document.getElementById('readsWhyWrap').classList.remove('on');
   if(pendingEnd)endTraining();
   else if(pendingNext)askAbout(pendingNext);
 };
@@ -1043,6 +1058,7 @@ function closeWhy(){whyExp.classList.remove('open');}
 function endTraining(){
   quiz.classList.remove('on');
   contBtn.classList.remove('show');
+  document.getElementById('readsWhyWrap').classList.remove('on');
   radiusScale=0.13;
   planets.forEach(p=>{if(p!==safePlanet)p.alive=false;});setCount();
   you.target.ang=safePlanet.ang+0.25;you.target.dist=0.04;
