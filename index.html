@@ -1,3 +1,5 @@
+<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
+     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
@@ -44,7 +46,7 @@
 
   .hud{position:absolute;bottom:0;left:0;right:0;z-index:12;padding:0 20px 24px}
   .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:8px}
-  .hud .reads{font-family:'Fraunces';font-size:17px;line-height:1.45;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 80px)}
+  .hud .reads{font-family:'Fraunces';font-size:16px;line-height:1.5;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 70px)}
   .hud .reads b{font-weight:400;font-style:italic}
   .hud .reads .song{color:var(--estrella)}
   .hud .reads .artist{color:var(--cian-glow)}
@@ -251,10 +253,9 @@
     <div class="lp-pre">Fase 02 · Entrenamiento</div>
     <h2>Así se construye <br>tu <i>galaxia</i>.</h2>
     <div class="sep"></div>
-   <p>Para organizar millones de canciones y usuarios, los <b>Sistemas de Recomendación Musical</b> crean espacios donde elementos similares quedan cerca entre sí.</p>
-    <p>Tu posición dentro de esta galaxia<b>cambia constantemente</b> según las interacciones que interprete el sistema. 
-    Todo lo que queda fuera de esta desaparece para ti</p>
-    <p>¿Quieres entrenar tu galaxia para ver hasta dónde se puede mover tu estrella?</p>
+    <p>Está hecha de <b>canciones</b> (los planetas) y de <b>perfiles</b> vecinos (las estrellas que te rodean). Así es como los <b>Sistemas de Recomendación Musical</b> construyen espacios latentes donde lo más cercano a ti es la recomendación que llega a tus oídos.</p>
+    <p>Estos espacios se <b>entrenan</b> con cada interacción tuya con el sistema. El algoritmo aprende mediante tus inputs, ya sea un like, un skip o cuánto tiempo escuchaste la canción, para ir moviendo tu perfil dentro de este espacio.</p>
+    <p>¿Quieres entrenar tu galaxia para ver hasta dónde se puede mover tu estrella de perfil?</p>
     <button class="lp-btn" id="lpBtn">Entrenar el algoritmo →</button>
   </div>
 
@@ -283,7 +284,7 @@
       <button class="fp-close" id="finaleClose">✕</button>
       <span class="fp-tag">Parte 2</span>
       <div class="fp-ttl">Ahora es tu turno</div>
-      <div class="fp-bd">Aquí termina lo que el algoritmo decide.</div>
+      <div class="fp-bd">Aquí termina lo que el algoritmo decide. Ahora puedes reimaginar tu galaxia: <b>qué la construye</b> y <b>para qué existe</b> — en vez de retenerte.</div>
       <div class="fp-note">Toca ✕ para ver tu galaxia final</div>
     </div>
   </div>
@@ -294,12 +295,7 @@
   <div class="veil" id="intro">
     <div class="pre">Alfabetización algorítmica · Parte 1 de 2</div>
     <h1>Descubre tu<br><i>galaxia musical</i>.</h1>
-    <p>Esta es una representación de tu mundo musical que el sistema crea para recomendarte música.
-      Cada planeta es una canción.
-      Cada estrella es un perfil de escucha.
-      En este espacio, la distancia lo es todo: 
-      el sistema recomienda lo que calcula está más cercano a ti.
-    Observa antes de interactuar.</p>
+    <p>Bienvenido a tu galaxia musical. Este espacio muestra cómo tu algoritmo de recomendación musical construye tus recomendaciones. Tu perfil es la estrella que está al medio, y las estrellas a tu alrededor son tus perfiles vecinos. Los planetas son tus canciones más escuchadas últimamente.</p>
     <div class="headphones">🎧 Ponte los audífonos antes de empezar</div>
     <button class="bigbtn" id="enter">Conectar Spotify →</button>
   </div>
@@ -329,15 +325,11 @@ const ARTISTS=["Mac DeMarco","Tame Impala","Mitski","Frank Ocean","Rosalía","Ki
 const TOP_ARTIST=ARTISTS[0], SECOND=ARTISTS[1], THIRD=ARTISTS[2];
 const SONGS=[
   {t:"Chamber of Reflection", a:TOP_ARTIST,     infl:1.0},
-  {t:"The Less I Know the Better", a:SECOND,     infl:.91},
-  {t:"Nobody",                  a:"Mitski",       infl:.78},
-  {t:"Nights",                  a:"Frank Ocean",  infl:.73},
-  {t:"DESPECHÁ",                a:"Rosalía",      infl:.68},
-  {t:"Easy Easy",               a:"King Krule",   infl:.54},
-  {t:"Space Song",              a:"Beach House",  infl:.60},
-  {t:"Bags",                    a:"Clairo",       infl:.48},
-  {t:"My Kind of Woman",        a:TOP_ARTIST,     infl:.64},
-  {t:"Pink Pony Club",          a:"Chappell Roan",infl:.41},
+  {t:"The Less I Know the Better", a:SECOND,     infl:.88},
+  {t:"Nobody",                  a:"Mitski",       infl:.74},
+  {t:"DESPECHÁ",                a:"Rosalía",      infl:.62},
+  {t:"Space Song",              a:"Beach House",  infl:.54},
+  {t:"Pink Pony Club",          a:"Chappell Roan",infl:.44},
 ];
 
 /* canción lejana: el sistema nunca se la mostrará */
@@ -448,16 +440,12 @@ function build(){
      Los más influyentes (grandes) van al interior; los menores al borde.
      Verificado con simulación: distancia mínima entre cualquier par > 55px CSS. */
   const POSITIONS=[
-    {ang:0.3840,dist:0.492},
-    {ang:1.0123,dist:0.900},
-    {ang:1.6406,dist:0.493},
-    {ang:2.2689,dist:0.900},
-    {ang:2.8972,dist:0.492},
-    {ang:3.5256,dist:0.900},
-    {ang:4.1539,dist:0.493},
-    {ang:4.7822,dist:0.900},
-    {ang:5.4105,dist:0.493},
-    {ang:6.0388,dist:0.900},
+    {ang:0.5236,dist:0.378},
+    {ang:1.5708,dist:0.920},
+    {ang:2.6180,dist:0.543},
+    {ang:3.6652,dist:0.920},
+    {ang:4.7124,dist:0.542},
+    {ang:5.7596,dist:0.920},
   ];
   planets=ordered.map((o,k)=>{
     const s=o.s;
@@ -974,9 +962,6 @@ function askAbout(pl){
   setNowPlaying(pl.s);
   document.getElementById('qText').textContent=QUESTIONS[Math.min(qIndex,QUESTIONS.length-1)](pl.s);
   quiz.classList.add('on');
-  why.classList.add('on');
-  closeWhy();
-  whyPill.classList.remove('active');
   qStart=performance.now();
 }
 
@@ -1007,7 +992,6 @@ function answer(like){
         .sort((a,b)=>b.dist-a.dist)[0];
       if(toKill) toKill.alive=false;
       radiusScale=Math.max(radiusScale*0.88,0.14);
-      read('Volviste a tu canción de siempre. Tu galaxia se achicó: una órbita menos.');
       atSafe=true;
     } else {
       /* va a una canción nueva → NO se achica, solo se mueve la estrella */
@@ -1016,7 +1000,6 @@ function answer(like){
       pool.sort((a,b)=>like?a.dist-b.dist:b.dist-a.dist);
       next=pool[0]||safePlanet;
       visited.add(next);
-      read(like?'Le diste like. El sistema te lleva a otra canción cercana.':'Hiciste skip. El sistema te mueve a otra órbita.');
       atSafe=false;
     }
     setCount();emit('shrink',{radius:radiusScale});
@@ -1026,9 +1009,8 @@ function answer(like){
     pushState();
 
     lastState={answerMs:ms,returnedToSafe:goesToSafe,idx:qIndex,like};
-    whyExp.innerHTML=`<span class="lbl">Explicación del movimiento</span>${whyText(lastState)}`;
-    closeWhy();
-    whyPill.classList.add('active');
+    // La explicación del movimiento ahora aparece en el HUD inferior izquierdo
+    read(whyText(lastState));
     qIndex++;
 
     pendingNext=next;
@@ -1048,8 +1030,6 @@ let pendingNext=null,pendingEnd=false;
 const contBtn=document.getElementById('cont');
 contBtn.onclick=()=>{
   contBtn.classList.remove('show');
-  closeWhy();
-  whyPill.classList.remove('active');
   if(pendingEnd)endTraining();
   else if(pendingNext)askAbout(pendingNext);
 };
@@ -1072,7 +1052,12 @@ function endTraining(){
   setNowPlaying(safePlanet.s);
   document.getElementById('phaseTag').textContent='Fase 03 · El borde';
   read('Tu galaxia entera cabe ahora en una sola canción: la primera que elegiste.');
-  whyExp.innerHTML=`<span class="lbl">¿Por qué quedó así?</span>El espacio latente fue construido con un objetivo: <b>retenerte dentro de la plataforma el mayor tiempo posible</b>. Por eso te corrige hacia lo seguro y borra lo incierto.`;
+  whyExp.innerHTML=`<span class="lbl">¿Por qué quedó así?</span>Durante esta experiencia tu galaxia se hizo cada vez más pequeña.
+  Algunas canciones permanecieron cerca.
+  Otras desaparecieron.
+  El sistema fue reduciendo la incertidumbre hasta encontrar rutas cada vez más predecibles: volver siempre a la canción que elegiste al principio, esta se convirtió en tu canción segura.
+  Esto ayuda al sistema cumplir con su objetivo de retenerte lo más posible dentro de la plataforma.
+  ¿Qué canción habrá quedado fuera de tu espacio latente, que hoy podría ser tu nueva canción favorita`;
   whyPill.textContent='⌖ ¿Por qué quedó así?';
   why.classList.add('on');
   closeWhy();
