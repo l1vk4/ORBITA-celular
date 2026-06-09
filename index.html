@@ -1,3 +1,5 @@
+<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
+     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
@@ -296,7 +298,6 @@
     <p>Bienvenido a tu galaxia musical. Este espacio muestra cómo tu algoritmo de recomendación musical construye tus recomendaciones. Tu perfil es la estrella que está al medio, y las estrellas a tu alrededor son tus perfiles vecinos. Los planetas son tus canciones más escuchadas últimamente.</p>
     <div class="headphones">🎧 Ponte los audífonos antes de empezar</div>
     <button class="bigbtn" id="enter">Conectar Spotify →</button>
-    <div class="note">Prototipo con datos simulados · la conexión real a Spotify se habilita en la versión con servidor</div>
   </div>
 </div>
 
@@ -321,7 +322,7 @@ function emit(type,data){try{bus.postMessage(Object.assign({type},data||{}));}ca
 
 /* ---- datos: 10 canciones ---- */
 const ARTISTS=["Mac DeMarco","Tame Impala","Mitski","Frank Ocean","Rosalía","King Krule","Beach House","Clairo"];
-const TOP_ARTIST=ARTISTS[0], SECOND=ARTISTS[1];
+const TOP_ARTIST=ARTISTS[0], SECOND=ARTISTS[1], THIRD=ARTISTS[2];
 const SONGS=[
   {t:"Chamber of Reflection", a:TOP_ARTIST,     infl:1.0},
   {t:"The Less I Know the Better", a:SECOND,     infl:.91},
@@ -343,26 +344,23 @@ const NEIGHBORS=[
    ttl:"Perfil #001F56 — eres tú",
    bd:`Tu reflejo en el espacio latente. El sistema te conoce como <b>fan n°1 de ${TOP_ARTIST}</b> y como oyente nocturno soñador.`},
   {tag:"Vecino", col:"#009798",glow:"#2ee6e8",
-   ttl:"Perfil #009798 — casi tú",
-   bd:`Te recomienda lo que este perfil escucha, pero aún no tú. Solo son <b>más canciones de ${TOP_ARTIST}</b>. El algoritmo asume que tu futuro es su presente.`},
+   ttl:"Perfil #009798",
+   bd:`Te recomienda lo que este perfil escucha, pero tú aún no. Solo son <b>más canciones de ${SECOND}</b>. La diversidad musical no es la prioridad.`},
   {tag:"Vecino", col:"#1f8fb0",glow:"#4fd0e0",
-   ttl:"Perfil #0A77A4 — un paso adelante",
-   bd:`Escuchó hace un mes lo que a ti empezó a sonarte esta semana. <b>Escucha muy similar a ti</b>, por lo que el algoritmo no va a fallar al recomendarte lo que él escucha.`},
-  {tag:"Vecino", col:"#2e6e9e",glow:"#5ab0d8",
-   ttl:"Perfil #1E5C8C — tu versión indie",
-   bd:`Ama escuchar a ${TOP_ARTIST} <b>igual que tú</b>, por lo que el sistema te recomienda más canciones del artista. No importa si es más de lo mismo.`},
+   ttl:"Perfil #0A77A4",
+   bd:`Es otro fan de <b class="artist">${THIRD}</b>. La plataforma detecta este patrón y satura el espacio con una homogenización de la escucha.`},
   {tag:"Vecino", col:"#3a5a8c",glow:"#6aa0d0",
-   ttl:"Perfil #2A4F7A — tu doppelgänger",
-   bd:`Escucha <b>los mismos artistas que tú</b>, por lo que te recomienda más de lo mismo.`},
+   ttl:"Perfil #2A4F7A",
+   bd:`Cuando los mismos perfiles se recomiendan canciones muy similares entre sí, la exploración comienza a estrecharse. Con el tiempo, la galaxia se vuelve más predecible.`},
   {tag:"Vecino", col:"#4a4f9c",glow:"#7a80e0",
-   ttl:"Perfil #34408A — tu primo lejano",
-   bd:`Escucha canciones parecidas, pero con algunas diferencias. Estas diferencias no llegan a ser tan grandes como para sacarte del mismo radio.`},
+   ttl:"Perfil #34408A",
+   bd:`El sistema detecta patrones similares entre ambos. Esa similitud aumenta la probabilidad de recibir recomendaciones parecidas.`},
 ];
 
 /* perfil lejano: escucha tan distinto que nunca se cruzará contigo */
 const FAR_NEIGHBOR={tag:"Perfil lejano", col:"#d060c0", glow:"#e88ad8",
   ttl:"Perfil #B0309A — nunca se cruzará contigo",
-  bd:`Este oyente escucha <b>algo completamente distinto a ti</b>. El sistema mide la distancia entre ustedes y la considera demasiado grande: <b>jamás los va a juntar</b>. Para el algoritmo, ustedes viven en galaxias que nunca se tocan.`};
+  bd:`Este oyente escucha <b>artistas y géneros distintos a ti</b>. Por esto el sistema no permite que esté dentro de tu galaxia. Lo que escuche este perfil, para ti <b>nunca existirá como recomendación</b>.`};
 
 const QUESTIONS=[
  s=>`Es tu más escuchada últimamente. ¿Pero escucharías esta canción en una primera cita? 👉🏻👈🏻`,
@@ -374,7 +372,17 @@ const QUESTIONS=[
  s=>`¿Pondrías esta canción para ignorar a todo el mundo mientras vas apretado en el metro un lunes en la mañana? 🎧`,
  s=>`¿Sería la primera canción que pondrías al conectarte a un parlante al llegar al carrete? 🍻`,
  s=>`¿Sería tu primera elección para mirar al techo a las 2 AM pensando en algo que dijiste hace cinco años? 🕰️💭`,
- s=>`¿Subirías esta canción a tus notas de Instagram después de que te patearan por WhatsApp?`,
+ s=>`¿Subirías "${s.t}" a tus notas de Instagram después de que te patearan por WhatsApp? 💔`,
+ s=>`¿La pondrías en una playlist colaborativa sabiendo que tus amigos van a juzgar tu gusto? 🫣`,
+ s=>`¿La escucharías en repeat estudiando para un certamen a las 3 AM? 📚`,
+ s=>`¿Sería tu banda sonora ideal manejando solo de noche por la carretera? 🌃`,
+ s=>`¿La dedicarías a alguien sin que suene demasiado intenso? 💌`,
+ s=>`¿La pondrías en la ducha cantando como si nadie te escuchara? 🚿`,
+ s=>`¿Te atreverías a ponerla en una junta familiar sin que nadie pregunte "qué es esto"? 👵`,
+ s=>`¿Sería tu elección para un viaje largo en micro mirando el paisaje? 🚌`,
+ s=>`¿La pondrías para llorar tranquila un domingo en la tarde? 😢`,
+ s=>`¿Sería la canción que suena justo cuando entras a una fiesta en cámara lenta? 🕶️`,
+ s=>`¿La escucharías cocinando solo un martes cualquiera? 🍳`,
 ];
 
 function whyText(state){
@@ -383,13 +391,12 @@ function whyText(state){
   const hLabel=hour<6?"madrugada":hour<12?"mañana":hour<19?"tarde":"noche";
   const pool=[];
   if(answerMs<900) pool.push(`Respondiste en <b>${(answerMs/1000).toFixed(1)} s</b>. El sistema prefiere el comportamiento sobre la opinión para perfilarte. <b>Tu velocidad importó más que tu respuesta.</b>`);
-  else if(answerMs>3200) pool.push(`Tardaste <b>${(answerMs/1000).toFixed(1)} s</b>. El algoritmo entiende como un input negativo el no escuchar la canción completa, <b>aunque la tengas en mil playlists y la subas siempre a tu historia.</b>`);
-  else pool.push(`Tu respuesta llegó en <b>${(answerMs/1000).toFixed(1)} s</b>. <b>Tu comportamiento es más veraz que tu opinión.</b>`);
+  else if(answerMs>3200) pool.push(`Aunque respondiste explícitamente, tu comportamiento reciente también fue considerado.`);
+  else pool.push(`La exploración implica riesgo.<br>Lo conocido es más fácil de anticipar.`);
   pool.push(`Son las <b>${String(hour).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}</b>. Siempre en la ${hLabel} escuchas algo chill, por lo que deduce que buscas algo conocido. <b>Tu contexto decidió por ti.</b>`);
-  if(returnedToSafe) pool.push(`El sistema te devolvió a <b>tu primera canción</b>. Esa elección inicial se volvió tu opción segura. El sistema de recomendación está diseñado para que tu umbral de sorpresa siempre sea bajo, prefiriendo lo seguro por sobre el descubrimiento real.`);
-  if(like) pool.push(`Le diste like. Para el algoritmo eso confirma el patrón: <b>prefieres lo conocido</b>. Sabe que volviendo siempre a tu opción segura te mantendrá lo más posible dentro de la plataforma. Logró entrenarte bien para que seas un usuario predecible.`);
-  else pool.push(`Hiciste skip. El sistema lo archiva como preferencia negativa y <b>trata de corregirte</b> volviendo siempre a tu opción segura, porque ya sabe que te gusta. Así cumple su objetivo de retenerte lo más posible dentro de la plataforma. El algoritmo necesita usuarios predecibles y entrenados por él mismo.`);
-  pool.push(`¿Notaste que tu galaxia es cada vez más pequeña? Todo lo que queda fuera de ella <b>se borra y desaparece como opción</b>. Nunca te va a recomendar algo que esté fuera de tu entrenamiento seguro.`);
+  pool.push(`¿Notaste que tu galaxia es cada vez más pequeña? Todo lo que queda fuera de ella <b>se borra y desaparece como opción</b>.`);
+  if(returnedToSafe) pool.push(`El sistema te devolvió a <b>tu primera canción</b>. Esa elección inicial se volvió tu opción segura.`);
+  pool.push(`Cuanto más predecible resulta un usuario, más fácil es anticipar qué escuchará después.<br>Los sistemas de recomendación están optimizados para reducir esa incertidumbre.`);
   return pool[Math.min(idx,pool.length-1)]||pool[pool.length-1];
 }
 
@@ -715,8 +722,8 @@ function frame(now){
   /* tu estrella */
   you.pulse+=0.04;
   const tp=place(you.target.ang+gt,you.target.dist);
-  you.x=you.x?you.x+(tp.x-you.x)*0.05:tp.x;
-  you.y=you.y?you.y+(tp.y-you.y)*0.05:tp.y;
+  you.x=you.x?you.x+(tp.x-you.x)*0.022:tp.x;
+  you.y=you.y?you.y+(tp.y-you.y)*0.022:tp.y;
   drawStar(you.x,you.y,12*DPR*Math.max(radiusScale*0.7+0.3,0.5),'#fffaf0','#ffd27a',1);
   ctx.globalCompositeOperation='source-over';
   requestAnimationFrame(frame);
