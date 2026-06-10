@@ -1,3 +1,5 @@
+<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
+     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
@@ -40,17 +42,22 @@
 
   .hud{position:absolute;bottom:0;left:0;right:0;z-index:12;padding:0 20px 24px}
   .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:8px}
-  .hud .reads{font-family:'Fraunces';font-size:16px;line-height:1.5;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 20px)}
+  .hud .reads{font-family:'Fraunces';font-size:15px;line-height:1.65;color:var(--ink-dim);
+    min-height:0;transition:opacity .5s;max-width:calc(100% - 20px);
+    padding:14px 16px 12px;
+    background:linear-gradient(160deg,rgba(6,10,28,.96),rgba(2,5,18,.97));
+    border:1px solid rgba(46,230,232,.14);border-radius:13px}
+  .hud .reads:empty{display:none;padding:0;border:none;background:none}
   .hud .reads b{font-weight:400;font-style:italic}
   .hud .reads .song{color:var(--estrella)}
   .hud .reads .artist{color:var(--cian-glow)}
   .hud .reads .profile{color:var(--azul-soft)}
   .hud .reads .far{color:var(--far-glow)}
 
-  /* reads en modo explicación del movimiento: misma gráfica que el desplegable */
-  .reads-why-wrap{display:none;margin-bottom:10px;padding:14px 16px 12px;
+  /* explicación del movimiento: misma gráfica que .reads pero en warm */
+  .reads-why-wrap{display:none;margin-bottom:0;padding:14px 16px 12px;
     background:linear-gradient(160deg,rgba(14,10,4,.97),rgba(6,5,12,.98));
-    border:1px solid rgba(255,184,107,.22);border-radius:13px;position:relative;overflow:hidden}
+    border:1px solid rgba(255,184,107,.18);border-radius:13px}
   .reads-why-wrap.on{display:block}
   .reads-why-wrap .why-lbl{font-size:10px;letter-spacing:.24em;color:var(--warm);
     text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
@@ -955,15 +962,15 @@ function chooseSafe(pl){
     step++;
     if(step>=loadSteps.length-1){ clearInterval(loadTimer); }
     read(loadSteps[Math.min(step,loadSteps.length-1)]);
-  },800);
+  },1800);
   setTimeout(()=>{
     clearInterval(loadTimer);
     read(loadSteps[loadSteps.length-1]);
     setTimeout(()=>{
       phase='quiz';qIndex=0;interactionCount=0;
       askAbout(pl);
-    },900);
-  },4200);
+    },2000);
+  },10000);
 }
 
 let qStart=0;
