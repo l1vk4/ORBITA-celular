@@ -1,3 +1,5 @@
+<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
+     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
@@ -52,10 +54,10 @@
   .hud .reads .profile{color:var(--azul-soft)}
   .hud .reads .far{color:var(--far-glow)}
 
-  /* explicación del movimiento: misma gráfica que .reads pero en warm */
+  /* explicación del movimiento: exactamente la misma gráfica que .reads */
   .reads-why-wrap{display:none;margin-bottom:0;padding:14px 16px 12px;
-    background:linear-gradient(160deg,rgba(14,10,4,.97),rgba(6,5,12,.98));
-    border:1px solid rgba(255,184,107,.18);border-radius:13px}
+    background:linear-gradient(160deg,rgba(6,10,28,.96),rgba(2,5,18,.97));
+    border:1px solid rgba(46,230,232,.14);border-radius:13px}
   .reads-why-wrap.on{display:block}
   .reads-why-wrap .why-lbl{font-size:10px;letter-spacing:.24em;color:var(--warm);
     text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
@@ -513,13 +515,16 @@ function place(ang,dist){
 /* posición de cuerpos lejanos: NO se achican con radiusScale */
 /* posición absoluta en pantalla para cuerpos lejanos */
 /* posición flotante para cuerpos lejanos — arriba y abajo, con movimiento suave */
+/* desplazamiento acumulado al tocar los cuerpos lejanos — se aleja lentamente */
+let farPlanetDrift=0; // píxeles CSS extra hacia arriba
+let farStarDrift=0;   // píxeles CSS extra hacia abajo
+
 function placeFarAbs(isTop, time){
   const t=time||0;
-  // flotación: ±18px horizontal, ±10px vertical, muy lenta
   const fx=cx() + Math.sin(t*0.00028+1.2)*18*DPR;
   const fy=isTop
-    ? 78*DPR + Math.sin(t*0.00022)*10*DPR
-    : H - 200*DPR + Math.sin(t*0.00019+2.1)*10*DPR;
+    ? 78*DPR - farPlanetDrift*DPR + Math.sin(t*0.00022)*10*DPR
+    : H - 200*DPR + farStarDrift*DPR + Math.sin(t*0.00019+2.1)*10*DPR;
   return {x:fx, y:fy};
 }
 
@@ -861,11 +866,15 @@ cv.addEventListener('click',e=>{
     if(h.type==='farplanet'){
       activePlanet=h.obj;activeStar=null;
       read(`<b class="far">"${FAR_SONG.t}"</b> — existe, pero el sistema jamás te la mostrará. Está demasiado lejos de tu perfil: para el algoritmo, no existe para ti.`);
+      // se aleja hacia arriba lentamente cada vez que se toca
+      driftFarBody('planet');
       exploredFarPlanet=true;maybeReveal();
     }
     if(h.type==='farstar'){
       activeStar=h.obj;activePlanet=null;
       read(`<b class="far">Perfil #B0309A — nunca se cruzará contigo.</b> Este oyente escucha algo completamente distinto a ti. El sistema mide la distancia y la considera demasiado grande: jamás los va a juntar.`);
+      // se aleja hacia abajo lentamente cada vez que se toca
+      driftFarBody('star');
       exploredFarStar=true;maybeReveal();
     }
   } else if(phase==='choose'){
@@ -876,7 +885,28 @@ cv.addEventListener('click',e=>{
 
 document.getElementById('finaleClose').onclick=()=>document.getElementById('finalePanel').classList.remove('on');
 
-/* ---- flujo de fases ---- */
+/* ---- cuerpos lejanos se alejan al tocarlos ---- */
+let driftPlanetTimer=null, driftStarTimer=null;
+function driftFarBody(which){
+  const TARGET=32; // px CSS de desplazamiento por toque
+  const STEPS=60;  // frames de animación (~3s)
+  const increment=TARGET/STEPS;
+  if(which==='planet'){
+    clearInterval(driftPlanetTimer);
+    let i=0;
+    driftPlanetTimer=setInterval(()=>{
+      farPlanetDrift+=increment;
+      if(++i>=STEPS) clearInterval(driftPlanetTimer);
+    },50);
+  } else {
+    clearInterval(driftStarTimer);
+    let i=0;
+    driftStarTimer=setInterval(()=>{
+      farStarDrift+=increment;
+      if(++i>=STEPS) clearInterval(driftStarTimer);
+    },50);
+  }
+}
 let phase='intro';
 const reads=document.getElementById('reads');
 const hintTop=document.getElementById('hintTop');
