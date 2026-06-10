@@ -1,5 +1,3 @@
-<!-- GALAXIA MUSICAL — Parte 1 de la instalación museográfica
-     Livka Kutz · Transparencia algorítmica en la escucha musical · Diseño UC 2026 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <style>
@@ -40,7 +38,7 @@
     background:linear-gradient(to top,rgba(2,3,10,.95) 50%,rgba(2,3,10,0));
     pointer-events:none}
 
-  .hud{position:absolute;bottom:0;left:0;right:0;z-index:12;padding:0 20px 70px}
+  .hud{position:absolute;bottom:0;left:0;right:0;z-index:12;padding:0 20px 24px}
   .hud .phase{font-size:11px;letter-spacing:.28em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:8px}
   .hud .reads{font-family:'Fraunces';font-size:16px;line-height:1.5;color:var(--ink);min-height:38px;transition:opacity .5s;max-width:calc(100% - 20px)}
   .hud .reads b{font-weight:400;font-style:italic}
@@ -169,15 +167,13 @@
   .why-top .exp b{color:var(--warm);font-weight:400}
   .why-top .exp .lbl{font-size:11px;letter-spacing:.24em;color:var(--warm);text-transform:uppercase;display:block;margin-bottom:8px;opacity:.8}
 
-  .cont-btn{position:absolute;z-index:42;left:50%;transform:translateX(-50%);
-    bottom:24px;
-    display:none;cursor:pointer;border:none;
+  .cont-btn{display:none;width:100%;cursor:pointer;border:none;margin-bottom:10px;
     font-family:'Space Mono';font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--void-0);
     background:linear-gradient(100deg,var(--cian),var(--cian-glow));padding:13px 30px;border-radius:30px;
     box-shadow:0 0 26px rgba(46,230,232,.35);transition:transform .15s}
-  .cont-btn.show{display:inline-block;animation:contIn .4s ease}
-  .cont-btn:hover{transform:translateX(-50%) translateY(-1px)}
-  @keyframes contIn{from{opacity:0;transform:translateX(-50%) translateY(6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  .cont-btn.show{display:block;animation:contIn .4s ease}
+  .cont-btn:hover{opacity:.9}
+  @keyframes contIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
   .finale-panel{position:absolute;inset:0;z-index:48;
     display:flex;align-items:center;justify-content:center;
@@ -247,11 +243,12 @@
   <!-- Panel de información unificado: canciones Y perfiles van aquí -->
   <div class="ui hud" id="hudPanel">
     <div class="phase" id="phaseTag">Fase 01 · Exploración</div>
+    <div class="reads" id="reads"></div>
+    <button class="cont-btn" id="cont">Continuar →</button>
     <div class="reads-why-wrap" id="readsWhyWrap">
       <span class="why-lbl">Explicación del movimiento</span>
       <div class="why-txt" id="readsWhy"></div>
     </div>
-    <div class="reads" id="reads"></div>
   </div>
 
   <div class="latent-panel" id="latentPanel">
@@ -282,7 +279,6 @@
     <div class="exp" id="whyExp"></div>
   </div>
 
-  <button class="cont-btn" id="cont">Continuar →</button>
 
   <div class="finale-panel" id="finalePanel">
     <div class="finale-inner">
@@ -944,20 +940,30 @@ function chooseSafe(pl){
   emit('highlight',{kind:'planet',idx:pl.songIdx});
   setNowPlaying(pl.s);
   document.getElementById('readsWhyWrap').classList.remove('on');
-  // 1) confirmación inmediata en el reads
-  read(`<b class="song">"${pl.s.t}"</b> — canción elegida. <b class="artist">Guardando tu input…</b>`);
-  // 2) puntos animados de carga
-  let dots=0;
+
+  const loadSteps=[
+    `<b class="song">"${pl.s.t}"</b> — canción elegida.`,
+    `<b class="song">"${pl.s.t}"</b> — <b class="artist">Guardando tu input…</b>`,
+    `Integrando al espacio latente<b class="artist">…</b>`,
+    `Calculando distancias con tus vecinos<b class="artist">…</b>`,
+    `Actualizando tu posición en la galaxia<b class="artist">…</b>`,
+    `Esa será tu punto de partida. Escucha e interactúa.`,
+  ];
+  let step=0;
+  read(loadSteps[step]);
   const loadTimer=setInterval(()=>{
-    dots=(dots+1)%4;
-    read(`<b class="song">"${pl.s.t}"</b> — canción elegida. <b class="artist">Guardando tu input${'.'.repeat(dots)}</b>`);
-  },380);
+    step++;
+    if(step>=loadSteps.length-1){ clearInterval(loadTimer); }
+    read(loadSteps[Math.min(step,loadSteps.length-1)]);
+  },800);
   setTimeout(()=>{
     clearInterval(loadTimer);
-    phase='quiz';qIndex=0;interactionCount=0;
-    read('Esa será tu punto de partida. Escucha e interactúa.');
-    askAbout(pl);
-  },1900);
+    read(loadSteps[loadSteps.length-1]);
+    setTimeout(()=>{
+      phase='quiz';qIndex=0;interactionCount=0;
+      askAbout(pl);
+    },900);
+  },4200);
 }
 
 let qStart=0;
